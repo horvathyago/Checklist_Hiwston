@@ -1,0 +1,11 @@
+
+Welcome to CakePHP v5.2.8 Console
+-------------------------------------------------------------------------------
+App : src
+Path: /app/src/
+DocumentRoot: /app/webroot
+Ini Path:
+-------------------------------------------------------------------------------
+built-in server is running in http://localhost:8765/
+You can exit with `CTRL-C`
+[Tue Oct 14 11:52:20 2025] PHP 8.3.6 Development Server (http://localhost:8765) started
