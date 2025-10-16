@@ -50,21 +50,12 @@ class ChecklistsController extends AppController
     {
         $checklist = $this->Checklists->newEmptyEntity();
         if ($this->request->is('post')) {
-            $checklist = $this->Checklists->patchEntity($checklist, $this->request->getData());
-
+            $checklist = $this->Checklists->patchEntity(
+                $checklist,
+                $this->request->getData(),
+                ['associated' => ['ChecklistEquipamentos']]
+            );
             if ($this->Checklists->save($checklist)) {
-                if ($this->request->getData('checklist_equipamentos')) {
-                    foreach ($this->request->getData('checklist_equipamentos') as $equipamentoData) {
-                        if (isset($equipamentoData['_joinData'])) {
-                            $checklistEquipamento = $this->Checklists->ChecklistEquipamentos->newEntity([
-                                'checklist_id' => $checklist->id,
-                                'equipamento_id' => $equipamentoData['equipamento_id'],
-                                'quantidade' => $equipamentoData['_joinData']['quantidade'],
-                            ]);
-                            $this->Checklists->ChecklistEquipamentos->save($checklistEquipamento);
-                        }
-                    }
-                }
                 $this->Flash->success(__('The checklist has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
@@ -122,14 +113,14 @@ class ChecklistsController extends AppController
     {
         $this->request->allowMethod(['post']);
         $maquinaId = $this->request->getData('maquina_id');
-        $maquina = $this->Checklists->Maquinas->get($maquinaId, contain: ['Equipamentos']);
+        $maquina = $this->Checklists->Maquinas->get($maquinaId, [
+            'contain' => ['Equipamentos'],
+        ]);
 
-        $this->viewBuilder()->setOption('serialize', ['equipamentos']);
-        $this->set('equipamentos', $maquina->equipamentos);
-        $this->viewBuilder()->setLayout('ajax');
-        $this->render(false);
+        $equipamentos = $maquina->equipamentos;
 
-        return $this->response->withType('application/json')->withStringBody(json_encode($maquina->equipamentos));
+        return $this->response->withType('application/json')
+            ->withStringBody(json_encode($equipamentos));
     }
 
     public function generatePdf($id = null)

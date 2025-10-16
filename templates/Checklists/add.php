@@ -60,16 +60,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 data.forEach(equipamento => {
                     const div = document.createElement('div');
 
-                    // Hidden input for the equipment ID
                     const hiddenEquipamentoId = document.createElement('input');
                     hiddenEquipamentoId.type = 'hidden';
                     hiddenEquipamentoId.name = `checklist_equipamentos[${index}][equipamento_id]`;
                     hiddenEquipamentoId.value = equipamento.id;
 
-                    // Checkbox for selection
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
-                    checkbox.name = `checklist_equipamentos[${index}][_joinData][checked]`;
+                    checkbox.name = `checklist_equipamentos[${index}][checked]`;
                     checkbox.value = 1;
                     checkbox.checked = true;
                     checkbox.id = `checklist_equipamentos-${index}-checked`;
@@ -78,13 +76,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     label.htmlFor = checkbox.id;
                     label.appendChild(document.createTextNode(equipamento.nome));
 
-                    // Input for the quantity
                     const quantidadeInput = document.createElement('input');
                     quantidadeInput.type = 'number';
-                    quantidadeInput.name = `checklist_equipamentos[${index}][_joinData][quantidade]`;
+                    quantidadeInput.name = `checklist_equipamentos[${index}][quantidade]`;
                     quantidadeInput.value = equipamento.quantidade_padrao;
 
-                    // Hidden input for the ChecklistEquipamento ID (empty for new records)
                     const hiddenId = document.createElement('input');
                     hiddenId.type = 'hidden';
                     hiddenId.name = `checklist_equipamentos[${index}][id]`;
