@@ -5,6 +5,7 @@ namespace App\Controller;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Cake\Log\Log;
 
 /**
  * Checklists Controller
@@ -49,12 +50,21 @@ class ChecklistsController extends AppController
     {
         $checklist = $this->Checklists->newEmptyEntity();
         if ($this->request->is('post')) {
-            $checklist = $this->Checklists->patchEntity(
-                $checklist,
-                $this->request->getData(),
-                ['associated' => ['ChecklistEquipamentos']]
-            );
+            $checklist = $this->Checklists->patchEntity($checklist, $this->request->getData());
+
             if ($this->Checklists->save($checklist)) {
+                if ($this->request->getData('checklist_equipamentos')) {
+                    foreach ($this->request->getData('checklist_equipamentos') as $equipamentoData) {
+                        if (isset($equipamentoData['_joinData'])) {
+                            $checklistEquipamento = $this->Checklists->ChecklistEquipamentos->newEntity([
+                                'checklist_id' => $checklist->id,
+                                'equipamento_id' => $equipamentoData['equipamento_id'],
+                                'quantidade' => $equipamentoData['_joinData']['quantidade'],
+                            ]);
+                            $this->Checklists->ChecklistEquipamentos->save($checklistEquipamento);
+                        }
+                    }
+                }
                 $this->Flash->success(__('The checklist has been saved.'));
 
                 return $this->redirect(['action' => 'index']);

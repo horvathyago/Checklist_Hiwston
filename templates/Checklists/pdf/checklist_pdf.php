@@ -5,14 +5,15 @@
     <title>Checklist</title>
     <style>
         @page {
-            margin: 15px;
+            margin: 10px;
         }
         body { font-family: sans-serif; font-size: 10px; }
         .container { width: 100%; }
         .header { width: 100%; border-collapse: collapse; }
-        .header td { border: 1px solid #000; padding: 2px; }
-        .header .logo { width: 20%; text-align: center; }
-        .header .title { width: 80%; text-align: center; font-weight: bold; font-size: 14px; }
+        .header td { border: 1px solid #000; padding: 2px; vertical-align: middle; }
+        .header .logo { width: 15%; text-align: center; }
+        .header .title { width: 60%; text-align: center; font-weight: bold; font-size: 14px; }
+        .header .details { width: 25%; }
         .info { width: 100%; border-collapse: collapse; margin-top: 5px; }
         .info td { border: 1px solid #000; padding: 2px; }
         .items { width: 100%; border-collapse: collapse; margin-top: 5px; }
@@ -34,18 +35,17 @@
     <div class="container">
         <table class="header">
             <tr>
-                <td class="logo" rowspan="2">
+                <td class="logo" rowspan="3">
                     <strong>HIWSTON</strong>
                 </td>
-                <td class="title" rowspan="2">CHECKLIST VOLUMES EXTERNOS</td>
-                <td><strong>Nº ORDEM DE PRODUÇÃO:</strong> <?= h($checklist->numero_ordem_producao) ?></td>
+                <td class="title" rowspan="3">CHECKLIST VOLUMES EXTERNOS</td>
+                <td class="details"><strong>Nº ORDEM DE PRODUÇÃO:</strong> <?= h($checklist->numero_ordem_producao) ?></td>
             </tr>
             <tr>
-                <td><strong>VOLTAGEM:</strong> <?= h($checklist->voltagem) ?></td>
+                <td class="details"><strong>VOLTAGEM:</strong> <?= h($checklist->voltagem) ?></td>
             </tr>
             <tr>
-                <td colspan="2"><strong>CLIENTE:</strong> <?= h($checklist->cliente) ?></td>
-                <td><strong>Nº DE SÉRIE:</strong> <?= h($checklist->numero_serie) ?></td>
+                <td class="details"><strong>CLIENTE:</strong> <?= h($checklist->cliente) ?></td>
             </tr>
         </table>
 
