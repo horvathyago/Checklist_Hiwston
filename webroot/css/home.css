@@ -1,75 +1,302 @@
-/* Home page styles */
-@font-face {
-    font-family: 'cakefont';
-    src: url('../font/cakedingbats-webfont.eot');
-    src: url('../font/cakedingbats-webfont.eot?#iefix') format('embedded-opentype'),
-    url('../font/cakedingbats-webfont.woff2') format('woff2'),
-    url('../font/cakedingbats-webfont.woff') format('woff'),
-    url('../font/cakedingbats-webfont.ttf') format('truetype'),
-    url('../font/cakedingbats-webfont.svg#cake_dingbatsregular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-body {
-    padding: 60px 0;
-}
-header {
-    margin-bottom: 60px;
-}
-img {
-    margin-bottom: 30px;
-}
-h1 {
-    font-weight: bold;
-}
-ul {
-    list-style-type: none;
-    margin: 0 0 30px 0;
-    padding-left: 25px;
-}
-a {
-    color: #0071BC;
-    text-decoration: underline;
-}
-hr {
-    border-bottom: 1px solid #e7e7e7;
-    border-top: 0;
-    margin-bottom: 35px;
+:root {
+    --sidebar-width: 230px;
+    --sidebar-collapsed-width: 80px;
+    --bg-light: #f5f5f5;
+    --bg-dark: #121212;
+    --card-bg-light: #fff;
+    --card-bg-dark: #1e1e1e;
+    --text-dark: #1a1a1a;
+    --text-light: #eee;
+    --primary: #e53935;
+    --primary-dark: #b71c1c;
+    --border: #ddd;
 }
 
-.text-center {
-    text-align: center;
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
 }
-.links a {
+
+body {
+    background: var(--bg-light);
+    color: var(--text-dark);
+    transition: background 0.6s ease, color 0.6s ease;
+}
+
+/* Modo escuro com transição suave */
+body.dark-mode {
+    background: var(--bg-dark);
+    color: var(--text-light);
+}
+
+/* Transição suave global */
+body, .sidebar, .main-content, .dashboard-header, .stat-card, .checklist-section {
+    transition: background-color 0.6s ease, color 0.6s ease, border-color 0.6s ease;
+}
+
+/* Dark mode */
+body.dark-mode .sidebar {
+    background: #000;
+    border-right-color: var(--primary-dark);
+}
+
+body.dark-mode .main-content {
+    background: var(--bg-dark);
+}
+
+body.dark-mode .stat-card,
+body.dark-mode .checklist-section,
+body.dark-mode .dashboard-header {
+    background: var(--card-bg-dark);
+    color: var(--text-light);
+}
+
+body.dark-mode .filter-btn {
+    background: var(--primary-dark);
+}
+
+body.dark-mode .checklist-table th {
+    background: #222;
+}
+
+/* Layout geral */
+.app-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: var(--sidebar-width);
+    background: #111;
+    color: #fff;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    transition: width 0.4s ease, box-shadow 0.4s ease;
+    border-right: 3px solid var(--primary);
+    overflow: hidden;
+    z-index: 1000;
+}
+
+.sidebar.collapsed {
+    width: var(--sidebar-collapsed-width);
+    box-shadow: inset -2px 0 5px rgba(0,0,0,0.2);
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 90px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar-logo {
+    width: 60%;
+    max-width: 130px;
+    filter: brightness(0) invert(1);
+}
+
+/* Links */
+.sidebar-nav {
+    margin-top: 25px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    color: #fff;
+    text-decoration: none;
+    transition: background 0.25s ease;
+}
+
+.sidebar-link:hover {
+    background: var(--primary);
+}
+
+.sidebar-link.active {
+    background: var(--primary-dark);
+}
+
+/* Ocultar texto quando colapsado */
+.sidebar.collapsed .sidebar-text {
+    opacity: 0;
+    visibility: hidden;
+    width: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Main */
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding: 25px;
+    width: calc(100% - var(--sidebar-width));
+    transition: all 0.4s ease;
+}
+
+.main-content.expanded {
+    margin-left: var(--sidebar-collapsed-width);
+    width: calc(100% - var(--sidebar-collapsed-width));
+}
+
+/* Header */
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--card-bg-light);
+    border-radius: 12px;
+    padding: 12px 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.menu-toggle {
+    font-size: 30px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-dark);
+    transition: color 0.4s ease, transform 0.2s ease;
+}
+
+/* Visível no modo escuro */
+body.dark-mode .menu-toggle {
+    color: #fff;
+}
+
+.menu-toggle:hover {
+    transform: scale(1.1);
+}
+
+.header-center img {
+    max-height: 48px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.theme-toggle {
+    font-size: 20px;
+    border: none;
+    background: none;
+    cursor: pointer;
     margin-right: 10px;
+    transition: transform 0.2s, color 0.4s;
+    color: var(--text-dark);
 }
-.release-name {
-    color: #D33C43;
-    font-weight: 400;
-    font-style: italic;
+
+body.dark-mode .theme-toggle {
+    color: #fff;
 }
-.bullet:before {
-    font-family: 'cakefont', sans-serif;
-    font-size: 18px;
-    display: inline-block;
-    margin-left: -1.3em;
-    width: 1.2em;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    vertical-align: -1px;
+
+.theme-toggle:hover {
+    transform: rotate(15deg);
 }
-.success:before {
-    color: #88c671;
-    content: "\0056";
+
+/* Cards */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
 }
-.problem:before {
-    color: #d33d44;
-    content: "\0057";
+
+.stat-card {
+    background: var(--card-bg-light);
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: transform 0.25s ease, background 0.3s;
 }
-.cake-error {
-    padding: 10px;
-    margin: 10px 0;
+
+.stat-card:hover {
+    transform: translateY(-4px);
 }
-#url-rewriting-warning {
-    display: none;
+
+/* Tabela */
+.checklist-section {
+    background: var(--card-bg-light);
+    border-radius: 12px;
+    padding: 25px;
+    margin-top: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-input {
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.filter-btn {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.filter-btn:hover {
+    background: var(--primary-dark);
+}
+
+.checklist-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.checklist-table th,
+.checklist-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+.checklist-table th {
+    background: #f8f8f8;
+    font-weight: 600;
+}
+
+body.dark-mode .checklist-table th {
+    background: #222;
+}
+
+.empty-row {
+    text-align: center;
+    color: #777;
+    padding: 20px;
 }
