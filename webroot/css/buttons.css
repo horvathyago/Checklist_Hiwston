@@ -1,0 +1,114 @@
+.btn {
+    border: none;
+    border-radius: var(--border-radius-sm);
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dark);
+}
+
+body.dark-mode .btn-secondary {
+    border-color: var(--border-dark);
+    color: var(--text-light);
+}
+
+.btn-secondary:hover {
+    background: rgba(0,0,0,0.05);
+}
+
+/* Botões específicos para admin */
+.admin-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+}
+
+.admin-btn:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    transform: translateY(-2px);
+}
+
+/* Ação desabilitada */
+.disabled-action {
+    opacity: 0.3;
+    cursor: not-allowed !important;
+}
+
+.disabled-action:hover {
+    transform: none !important;
+    background: none !important;
+}
+
+.btn-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform var(--transition-fast), color var(--transition-slow);
+}
+
+.btn-toggle:hover {
+    transform: scale(1.1);
+}
+
+.btn-action {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background var(--transition-fast);
+}
+
+.btn-action:hover {
+    background: rgba(0,0,0,0.1);
+}
+
+.menu-toggle {
+    font-size: 30px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-dark);
+    transition: color var(--transition-slow), transform var(--transition-fast);
+}
+
+.theme-toggle {
+    font-size: 20px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: transform var(--transition-fast), color var(--transition-slow);
+}
+
+.filter-btn {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    font-size: 14px;
+    transition: all var(--transition-fast);
+}

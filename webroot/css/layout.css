@@ -1,0 +1,145 @@
+:root {
+    --sidebar-width: 230px;
+    --sidebar-collapsed-width: 80px;
+    --border-radius: 12px;
+    --border-radius-sm: 6px;
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.6s ease;
+}
+
+.app-container {
+    display: flex;
+    height: 100vh;
+}
+
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding: 30px 40px;
+    width: calc(100% - var(--sidebar-width));
+    transition: all var(--transition-normal);
+    min-height: 100vh;
+}
+
+.main-content.expanded {
+    margin-left: var(--sidebar-collapsed-width);
+    width: calc(100% - var(--sidebar-collapsed-width));
+    padding: 35px 50px;
+}
+
+/* Grid system - ajuste para quando tiver 4 cards (com admin) */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Quando tiver 4 cards (admin logado) */
+.stats-grid.has-admin-cards {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* Layout recolhido - 4 cards em grid 2x2 */
+.main-content.expanded .stats-grid.has-admin-cards {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 1400px;
+}
+
+@media (max-width: 1024px) {
+    .stats-grid.has-admin-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-grid.has-admin-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flex-gap {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.main-content.expanded .content-wrapper {
+    max-width: 1400px;
+}
+/* Paginação estilo Dashboard */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.paginator ul.pagination {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.paginator .page-btn, 
+.paginator .current-page {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background-color: var(--btn-bg, #6c63ff);
+    color: var(--btn-color, #fff);
+    text-decoration: none;
+    transition: 0.3s;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.paginator .page-btn:hover {
+    background-color: var(--btn-hover-bg, #574fd6);
+}
+
+.paginator .current-page {
+    background-color: var(--btn-current-bg, #ff6584);
+    color: #fff;
+}
+
+body.dark-mode .paginator .page-btn {
+    background-color: #444;
+}
+
+body.dark-mode .paginator .page-btn:hover {
+    background-color: #666;
+}
+
+body.dark-mode .paginator .current-page {
+    background-color: #ff6584;
+}

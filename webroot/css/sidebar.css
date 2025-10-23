@@ -1,0 +1,151 @@
+:root {
+    --sidebar-width: 230px;
+    --sidebar-collapsed-width: 80px;
+    --bg-light: #f5f5f5;
+    --bg-dark: #121212;
+    --card-bg-light: #fff;
+    --card-bg-dark: #1e1e1e;
+    --text-dark: #1a1a1a;
+    --text-light: #eee;
+    --primary: #e53935;
+    --primary-dark: #b71c1c;
+    --border: #ddd;
+}
+
+/* ===============================
+   SIDEBAR PRINCIPAL
+   =============================== */
+.sidebar {
+    width: var(--sidebar-width);
+    background: #111;
+    color: #fff;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    transition: width 0.4s ease, box-shadow 0.4s ease;
+    border-right: 3px solid var(--primary);
+    overflow: hidden;
+    z-index: 1000;
+}
+
+/* Quando colapsada */
+.sidebar.collapsed {
+    width: var(--sidebar-collapsed-width);
+    box-shadow: inset -2px 0 5px rgba(0,0,0,0.2);
+}
+
+/* Quando aberta explicitamente (para o JS restaurar o estado) */
+.sidebar.open {
+    width: var(--sidebar-width);
+}
+
+/* ===============================
+   CABEÇALHO / LOGO
+   =============================== */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 90px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar-logo {
+    width: 60%;
+    max-width: 130px;
+    filter: brightness(0) invert(1);
+}
+
+/* ===============================
+   LINKS
+   =============================== */
+.sidebar-nav {
+    margin-top: 25px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    color: #fff;
+    text-decoration: none;
+    transition: background 0.25s ease;
+}
+
+.sidebar-link:hover {
+    background: var(--primary);
+}
+
+.sidebar-link.active {
+    background: var(--primary-dark);
+}
+
+/* Oculta o texto no modo colapsado */
+.sidebar .sidebar-text {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-text {
+    opacity: 0;
+    visibility: hidden;
+    width: 0;
+}
+
+/* ===============================
+   ITEM EXCLUSIVO DE ADMIN
+   =============================== */
+.sidebar-link.admin-only {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, transparent 100%);
+    border-left: 3px solid #667eea;
+    position: relative;
+}
+
+.sidebar-link.admin-only::before {
+    content: 'ADMIN';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #667eea;
+    color: white;
+    font-size: 0.6rem;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.sidebar-link.admin-only .sidebar-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+}
+
+/* ===============================
+   LOGOUT
+   =============================== */
+.sidebar-logout {
+    margin-top: auto;
+    margin-bottom: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 20px;
+}
+
+.logout-link {
+    color: #ff6b6b !important;
+    background: rgba(255, 107, 107, 0.1) !important;
+}
+
+.logout-link:hover {
+    background: rgba(255, 107, 107, 0.2) !important;
+    color: #ff5252 !important;
+}
+
+/* ===============================
+   MODO ESCURO
+   =============================== */
+body.dark-mode .sidebar {
+    background: #000;
+    border-right-color: var(--primary-dark);
+}

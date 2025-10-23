@@ -1,0 +1,177 @@
+.table-container {
+    background: var(--card-bg-light);
+    border-radius: var(--border-radius);
+    padding: 30px;
+    margin-top: 25px;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-ultra-smooth);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+/* LAYOUT RECOLHIDO - Tabela ocupa espaço de forma inteligente */
+.main-content.expanded .table-container {
+    padding: 35px 30px; /* Padding equilibrado */
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.table th,
+.table td {
+    padding: 16px 12px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+}
+
+.table th {
+    background: #f8f8f8;
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--primary);
+}
+
+/* LAYOUT RECOLHIDO - Tabela com colunas melhor distribuídas */
+.main-content.expanded .table th,
+.main-content.expanded .table td {
+    padding: 18px 15px; /* Padding ligeiramente maior */
+}
+
+.main-content.expanded .table {
+    font-size: 1rem; /* Texto ligeiramente maior */
+}
+
+/* Distribuição inteligente das colunas */
+.main-content.expanded .table th:nth-child(1),
+.main-content.expanded .table td:nth-child(1) {
+    width: 10%; /* ID ocupa menos espaço */
+}
+
+.main-content.expanded .table th:nth-child(2),
+.main-content.expanded .table td:nth-child(2) {
+    width: 30%; /* Cliente ocupa mais espaço */
+}
+
+.main-content.expanded .table th:nth-child(3),
+.main-content.expanded .table td:nth-child(3) {
+    width: 20%; /* Data com espaço equilibrado */
+}
+
+.main-content.expanded .table th:nth-child(4),
+.main-content.expanded .table td:nth-child(4) {
+    width: 20%; /* Status com espaço equilibrado */
+}
+
+.main-content.expanded .table th:nth-child(5),
+.main-content.expanded .table td:nth-child(5) {
+    width: 20%; /* Ações com espaço adequado */
+}
+
+.table tbody tr {
+    transition: background-color var(--transition-smooth);
+}
+
+.table tbody tr:hover {
+    background: rgba(0,0,0,0.02);
+    transform: scale(1.002);
+}
+
+/* Ações na tabela MAIORES */
+.actions {
+    display: flex;
+    gap: 12px; /* Gap maior */
+    justify-content: flex-start;
+}
+
+.btn-view, .btn-edit, .btn-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 12px; /* Padding maior */
+    border-radius: 8px; /* Border radius maior */
+    transition: all var(--transition-bouncy);
+    font-size: 18px; /* Ícone maior */
+    opacity: 0.8;
+}
+
+/* Ícones AINDA MAIORES no layout expandido */
+.main-content.expanded .btn-view,
+.main-content.expanded .btn-edit,
+.main-content.expanded .btn-delete {
+    font-size: 20px; /* Ícone muito maior */
+    padding: 10px 14px; /* Padding muito maior */
+}
+
+.btn-view:hover { 
+    background: rgba(0,123,255,0.15); 
+    opacity: 1;
+    transform: scale(1.25);
+}
+.btn-edit:hover { 
+    background: rgba(255,193,7,0.15); 
+    opacity: 1;
+    transform: scale(1.25) rotate(-5deg);
+}
+.btn-delete:hover { 
+    background: rgba(220,53,69,0.15); 
+    opacity: 1;
+    transform: scale(1.25) rotate(5deg);
+}
+
+/* Modo escuro */
+body.dark-mode .table-container {
+    background: var(--card-bg-dark);
+    border-color: rgba(255,255,255,0.1);
+}
+
+body.dark-mode .table th {
+    background: #222;
+    color: var(--text-light);
+}
+
+body.dark-mode .table tbody tr:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+/* Estados da tabela MAIORES */
+.empty-row {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 50px 20px; /* Padding maior */
+    font-size: 1.2rem; /* Texto maior */
+}
+
+/* Texto AINDA MAIOR no layout expandido */
+.main-content.expanded .empty-row {
+    font-size: 1.3rem; /* Texto muito maior */
+    padding: 60px 20px; /* Padding muito maior */
+}
+
+.status-badge {
+    padding: 8px 16px; /* Padding maior */
+    border-radius: 20px;
+    font-size: 0.9rem; /* Texto maior */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Status badge AINDA MAIOR no layout expandido */
+.main-content.expanded .status-badge {
+    padding: 10px 18px; /* Padding muito maior */
+    font-size: 1rem; /* Texto muito maior */
+}
+
+.status-pendente { background: #fff3cd; color: #856404; }
+.status-concluido { background: #d4edda; color: #155724; }
+.status-cancelado { background: #f8d7da; color: #721c24; }
+
+/* Modo escuro para status */
+body.dark-mode .status-pendente { background: #332701; color: #ffd54f; }
+body.dark-mode .status-concluido { background: #0f2a15; color: #4caf50; }
+body.dark-mode .status-cancelado { background: #3c0b0e; color: #f28b82; }

@@ -1,0 +1,55 @@
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.form-input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius-sm);
+    font-size: 14px;
+    transition: border-color var(--transition-normal);
+    background: var(--card-bg-light);
+    color: var(--text-dark);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.1);
+}
+
+/* Modo escuro */
+body.dark-mode .form-input {
+    background: var(--card-bg-dark);
+    border-color: var(--border-dark);
+    color: var(--text-light);
+}
+
+/* Filtros */
+.filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-input {
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius-sm);
+    font-size: 14px;
+    transition: border-color var(--transition-normal);
+    background: var(--card-bg-light);
+    color: var(--text-dark);
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}

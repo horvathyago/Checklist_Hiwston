@@ -1,0 +1,94 @@
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--card-bg-light);
+    border-radius: var(--border-radius);
+    padding: 15px 25px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-slow);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.main-content.expanded .dashboard-header {
+    max-width: 1400px;
+    margin: 0 auto 40px auto;
+    padding: 18px 35px;
+}
+
+.header-center img {
+    max-height: 50px;
+    transition: transform var(--transition-normal);
+}
+
+.main-content.expanded .header-center img {
+    max-height: 55px;
+    transform: scale(1.05);
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.current-time {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+.main-content.expanded .current-time {
+    font-size: 1rem;
+}
+
+.user-role {
+    margin-left: 15px;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Modo escuro */
+body.dark-mode .dashboard-header {
+    background: var(--card-bg-dark);
+    border-color: rgba(255,255,255,0.1);
+}
+/* Estilo para user info e logout no header */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-name {
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+body.dark-mode .user-name {
+    color: var(--text-light);
+}
+
+.btn-logout {
+    background: rgba(255, 107, 107, 0.1);
+    color: #ff6b6b;
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    transition: all var(--transition-fast);
+}
+
+.btn-logout:hover {
+    background: rgba(255, 107, 107, 0.2);
+    color: #ff5252;
+    transform: translateY(-1px);
+}

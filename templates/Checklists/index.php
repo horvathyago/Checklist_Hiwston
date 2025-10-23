@@ -1,6 +1,33 @@
 <?php
 $this->assign('title', 'Dashboard - Sistema de Checklist');
-$this->Html->css('home', ['block' => true]);
+$this->Html->css([
+    'variables',
+    'reset', 
+    'layout',
+    'sidebar',
+    'header',
+    'buttons',
+    'cards',
+    'tables',
+    'forms',
+    'dark-mode',
+    'utilities',
+    'professional'
+], ['block' => true]);
+
+$this->Html->script('dashboard', ['block' => true]);
+
+// VERIFICAÇÃO DO USUÁRIO ADMIN - CORRIGIDO
+$isAdmin = false;
+$currentUser = null;
+
+if ($this->request->getAttribute('identity')) {
+    $currentUser = $this->request->getAttribute('identity');
+    
+    // CONDIÇÃO CORRIGIDA - campo 'role' com valor 'admin'
+    $isAdmin = ($currentUser->role === 'admin');
+}
+
 ?>
 
 <div class="app-container">
@@ -11,18 +38,39 @@ $this->Html->css('home', ['block' => true]);
         </div>
 
         <div class="sidebar-nav">
-            <a href="#" class="sidebar-link active">
+            <a href="<?= $this->Url->build(['controller' => 'Checklists', 'action' => 'index']) ?>" class="sidebar-link active">
                 <span class="sidebar-icon">🏠</span><span class="sidebar-text">Dashboard</span>
             </a>
-            <a href="#" class="sidebar-link">
+            
+            <?php if ($isAdmin): ?>
+            <!-- BOTÃO APENAS PARA ADMIN -->
+            <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'index']) ?>" class="sidebar-link admin-only">
+                <span class="sidebar-icon">👥</span><span class="sidebar-text">Usuários</span>
+            </a>
+            <?php endif; ?>
+            
+            <a href="<?= $this->Url->build(['controller' => 'Maquinas', 'action' => 'index']) ?>" class="sidebar-link">
                 <span class="sidebar-icon">🏭</span><span class="sidebar-text">Máquinas</span>
             </a>
-            <a href="#" class="sidebar-link">
+            <a href="<?= $this->Url->build(['controller' => 'Equipamentos', 'action' => 'index']) ?>" class="sidebar-link">
                 <span class="sidebar-icon">🔧</span><span class="sidebar-text">Equipamentos</span>
             </a>
-            <a href="#" class="sidebar-link">
+            <a href="<?= $this->Url->build(['controller' => 'Checklists', 'action' => 'add']) ?>" class="sidebar-link">
                 <span class="sidebar-icon">➕</span><span class="sidebar-text">Novo Checklist</span>
             </a>
+
+            <!-- BOTÃO DE LOGOUT -->
+            <div class="sidebar-logout">
+                <?= $this->Form->postLink(
+                    '<span class="sidebar-icon">🚪</span><span class="sidebar-text">Sair</span>',
+                    ['controller' => 'Users', 'action' => 'logout'],
+                    [
+                        'escape' => false,
+                        'class' => 'sidebar-link logout-link',
+                        'confirm' => 'Tem certeza que deseja sair?'
+                    ]
+                ) ?>
+            </div>
         </div>
     </nav>
 
@@ -35,52 +83,96 @@ $this->Html->css('home', ['block' => true]);
             </div>
             <div class="header-right">
                 <button id="themeToggle" class="theme-toggle" title="Alternar tema">🌙</button>
-                <span class="current-time"><?= date('d/m/Y - H:i') ?></span>
+                <span class="current-time"><?= date('d/m/Y') ?></span>
+                
+                <!-- Mostrar role do usuário -->
+                <?php if ($currentUser): ?>
+                <div class="user-info">
+                    <span class="user-name"><?= h($currentUser->username ?? $currentUser->email) ?></span>
+                    <span class="user-role">
+                        <?= $isAdmin ? '👑 Admin' : '👤 Usuário' ?>
+                    </span>
+                    <?= $this->Form->postLink(
+                        '🚪 Sair',
+                        ['controller' => 'Users', 'action' => 'logout'],
+                        [
+                            'class' => 'btn-logout',
+                            'confirm' => 'Tem certeza que deseja sair?'
+                        ]
+                    ) ?>
+                </div>
+                <?php endif; ?>
             </div>
         </header>
 
-        <div class="dashboard-main">
-            <!-- Cards -->
+        <div class="dashboard-main content-wrapper">
+            <!-- Cards com links -->
             <section class="stats-section">
                 <h2 class="section-title">Resumo Geral</h2>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">🏭</div>
-                        <div class="stat-info">
-                            <span class="stat-number">0</span>
-                            <span class="stat-label">Máquinas</span>
+                <div class="stats-grid <?= $isAdmin ? 'has-admin-cards' : '' ?>">
+                    <a href="<?= $this->Url->build(['controller' => 'Maquinas', 'action' => 'index']) ?>" class="stat-card-link">
+                        <div class="stat-card">
+                            <div class="stat-icon">🏭</div>
+                            <div class="stat-info">
+                                <span class="stat-number"><?= $maquinasCount ?? '0' ?></span>
+                                <span class="stat-label">Máquinas</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">🔧</div>
-                        <div class="stat-info">
-                            <span class="stat-number">0</span>
-                            <span class="stat-label">Equipamentos</span>
+                    </a>
+                    <a href="<?= $this->Url->build(['controller' => 'Equipamentos', 'action' => 'index']) ?>" class="stat-card-link">
+                        <div class="stat-card">
+                            <div class="stat-icon">🔧</div>
+                            <div class="stat-info">
+                                <span class="stat-number"><?= $equipamentosCount ?? '0' ?></span>
+                                <span class="stat-label">Equipamentos</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">📋</div>
-                        <div class="stat-info">
-                            <span class="stat-number">0</span>
-                            <span class="stat-label">Checklists</span>
+                    </a>
+                    <a href="<?= $this->Url->build(['controller' => 'Checklists', 'action' => 'index']) ?>" class="stat-card-link">
+                        <div class="stat-card">
+                            <div class="stat-icon">📋</div>
+                            <div class="stat-info">
+                                <span class="stat-number"><?= $checklistsCount ?? '0' ?></span>
+                                <span class="stat-label">Checklists</span>
+                            </div>
                         </div>
-                    </div>
+                    </a>
+                    
+                    <?php if ($isAdmin && isset($usersCount)): ?>
+                    <!-- Card adicional apenas para admin -->
+                    <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'index']) ?>" class="stat-card-link admin-card">
+                        <div class="stat-card">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-info">
+                                <span class="stat-number"><?= $usersCount ?></span>
+                                <span class="stat-label">Usuários</span>
+                            </div>
+                        </div>
+                    </a>
+                    <?php endif; ?>
                 </div>
             </section>
 
             <!-- Tabela -->
-            <section class="checklist-section">
-                <div class="section-header">
+            <section class="checklist-section table-container">
+                <div class="section-header flex-between">
                     <h2 class="section-title">Todos os Checklists</h2>
-                    <div class="filters">
-                        <input type="text" placeholder="Buscar por nome..." class="filter-input">
-                        <input type="date" class="filter-input">
-                        <button class="filter-btn">Buscar</button>
+                    <div class="filters flex-gap">
+                        <input type="text" placeholder="Buscar por nome..." class="filter-input form-input">
+                        <input type="date" class="filter-input form-input">
+                        <button class="filter-btn btn btn-primary">Buscar</button>
+                        
+                        <?php if ($isAdmin): ?>
+                        <!-- Botão de ação rápida para admin -->
+                        <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'add']) ?>" class="btn btn-secondary admin-btn">
+                           ➕ Novo Usuário
+                        </a>
+                        <?php endif; ?>
                     </div>
                 </div>
 
                 <div class="checklist-table">
-                    <table>
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -91,9 +183,54 @@ $this->Html->css('home', ['block' => true]);
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td colspan="5" class="empty-row">Nenhum checklist encontrado</td>
-                            </tr>
+                            <?php if (!empty($checklists)): ?>
+                                <?php foreach ($checklists as $checklist): ?>
+                                    <tr>
+                                        <td><?= $checklist->id ?></td>
+                                        <td><?= h($checklist->cliente) ?></td>
+                                        <td>
+                                            <?php 
+                                            if ($checklist->data instanceof \Cake\I18n\Time || $checklist->data instanceof \Cake\I18n\Date) {
+                                                echo $checklist->data->format('d/m/Y');
+                                            } else {
+                                                echo date('d/m/Y', strtotime($checklist->data));
+                                            }
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <span class="status-badge status-<?= strtolower($checklist->status) ?>">
+                                                <?= h($checklist->status) ?>
+                                            </span>
+                                        </td>
+                                        <td class="actions">
+                                            <a href="<?= $this->Url->build(['controller' => 'Checklists', 'action' => 'view', $checklist->id]) ?>" 
+                                            class="btn-view btn-action" 
+                                            title="Visualizar"
+                                            data-checklist-id="<?= $checklist->id ?>">👁️</a>
+                                            <a href="<?= $this->Url->build(['controller' => 'Checklists', 'action' => 'edit', $checklist->id]) ?>" 
+                                            class="btn-edit btn-action" title="Editar">✏️</a>
+                                            
+                                            <?php if ($isAdmin): ?>
+                                            <!-- Apenas admin pode excluir -->
+                                            <?= $this->Form->postLink('🗑️', 
+                                                ['controller' => 'Checklists', 'action' => 'delete', $checklist->id], 
+                                                ['confirm' => 'Tem certeza que deseja excluir este checklist?', 
+                                                'class' => 'btn-delete btn-action', 
+                                                'title' => 'Excluir', 
+                                                'escape' => false]
+                                            ) ?>
+                                            <?php else: ?>
+                                            <!-- Usuário normal não vê o botão de excluir -->
+                                            <span class="btn-action disabled-action" title="Apenas administradores podem excluir">🗑️</span>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="5" class="empty-row">Nenhum checklist encontrado</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -101,32 +238,3 @@ $this->Html->css('home', ['block' => true]);
         </div>
     </main>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const sidebar = document.getElementById('sidebar');
-    const menuToggle = document.getElementById('menuToggle');
-    const mainContent = document.getElementById('mainContent');
-    const themeToggle = document.getElementById('themeToggle');
-    const timeEl = document.querySelector('.current-time');
-
-    // Menu lateral animado
-    menuToggle.addEventListener('click', () => {
-        sidebar.classList.toggle('collapsed');
-        mainContent.classList.toggle('expanded');
-    });
-
-    // Atualizar hora em tempo real
-    function updateTime() {
-        const now = new Date();
-        timeEl.textContent = now.toLocaleDateString('pt-BR') + ' - ' + now.toLocaleTimeString('pt-BR');
-    }
-    setInterval(updateTime, 1000);
-
-    // Dark mode
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
-    });
-});
-</script>

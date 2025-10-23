@@ -1,0 +1,24 @@
+/* Transições suaves para modo escuro */
+body, .sidebar, .main-content, .dashboard-header, 
+.card, .stat-card, .table-container {
+    transition: background-color var(--transition-slow), 
+                color var(--transition-slow), 
+                border-color var(--transition-slow);
+}
+
+/* Sidebar modo escuro */
+body.dark-mode .sidebar {
+    background: #000;
+    border-right-color: var(--primary-dark);
+}
+
+/* Conteúdo modo escuro */
+body.dark-mode .main-content {
+    background: var(--bg-dark);
+}
+
+/* Textos modo escuro */
+body.dark-mode .menu-toggle,
+body.dark-mode .theme-toggle {
+    color: #fff;
+}

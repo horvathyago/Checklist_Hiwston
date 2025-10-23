@@ -36,7 +36,7 @@ $cakeDescription = 'Sistema de Checklist';
 <body>
     <nav class="top-nav">
         <div class="top-nav-title">
-            <a href="<?= $this->Url->build('/') ?>"><span>Checklist</span> System</a>
+            
         </div>
     </nav>
     <main class="main">

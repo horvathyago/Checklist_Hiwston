@@ -1,0 +1,248 @@
+/* Animações de entrada cinematográficas */
+@keyframes fadeInUpSmooth {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Aplica animações suaves */
+.stat-card {
+    animation: fadeInUpSmooth 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3) { animation-delay: 0.3s; }
+
+.table-container {
+    animation: fadeInUpSmooth 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s both;
+}
+
+.dashboard-header {
+    animation: slideInLeft 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* Efeito de flutuação sutil para cards */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.stat-card:hover {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Loading states suaves */
+.stat-number:empty {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
+    min-width: 60px;
+    color: transparent;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Transição suave para modo escuro */
+body.dark-mode * {
+    transition: color var(--transition-ultra-smooth), 
+                background-color var(--transition-ultra-smooth),
+                border-color var(--transition-ultra-smooth),
+                box-shadow var(--transition-ultra-smooth);
+}
+
+/* Hover effects refinados para tabela */
+.table tbody tr {
+    transition: all var(--transition-smooth);
+}
+
+.table tbody tr:hover {
+    background: rgba(0,0,0,0.03);
+    transform: translateX(4px);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+body.dark-mode .table tbody tr:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+/* Transição suave para filtros */
+.filter-input {
+    transition: all var(--transition-smooth);
+}
+
+.filter-input:focus {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+}
+
+/* Animação suave para mudanças de conteúdo */
+.content-fade-enter {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.content-fade-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all var(--transition-ultra-smooth);
+}
+/* Estados touch para mobile */
+.stat-card-link.touch-hover .stat-card {
+    transform: translateY(-4px) scale(1.02);
+}
+
+/* Animações de entrada quando a página carrega */
+body.loaded .stat-card {
+    animation: fadeInUpSmooth 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+body.loaded .table-container {
+    animation: fadeInUpSmooth 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s both;
+}
+
+/* Suporte para reduzir movimento */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition-duration: 0.1s !important;
+        animation-duration: 0.1s !important;
+    }
+    
+    .stat-card:hover {
+        transform: none !important;
+    }
+}
+/* Títulos */
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text-dark);
+    position: relative;
+}
+
+/* LAYOUT RECOLHIDO - Títulos com melhor hierarquia */
+.main-content.expanded .section-title {
+    font-size: 1.7rem; /* Título ligeiramente maior */
+    text-align: center;
+    margin-bottom: 35px; /* Margin maior para melhor espaçamento */
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: var(--primary);
+    border-radius: 2px;
+}
+
+.main-content.expanded .section-title::after {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px; /* Linha mais larga no centro */
+}
+
+/* Filtros com melhor distribuição */
+.filters {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* LAYOUT RECOLHIDO - Filtros ocupam espaço disponível */
+.main-content.expanded .filters {
+    gap: 15px; /* Mais espaço entre filtros */
+}
+
+.main-content.expanded .filter-input {
+    flex: 1; /* Inputs ocupam espaço disponível */
+    min-width: 200px; /* Largura mínima adequada */
+}
+
+.filter-input {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius-sm);
+    font-size: 0.95rem;
+    transition: border-color var(--transition-normal);
+    background: var(--card-bg-light);
+    color: var(--text-dark);
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.1);
+}
+
+.filter-btn {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 8px 20px;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all var(--transition-fast);
+    white-space: nowrap; /* Evita quebra de texto */
+}
+
+.filter-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+/* Layout responsivo para filtros */
+@media (max-width: 768px) {
+    .main-content.expanded .filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .main-content.expanded .filter-input {
+        min-width: auto;
+    }
+}

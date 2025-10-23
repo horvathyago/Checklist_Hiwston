@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use Cake\Controller\Controller;
+use Cake\Event\EventInterface;
 
 /**
  * Application Controller
@@ -42,11 +43,34 @@ class AppController extends Controller
         parent::initialize();
 
         $this->loadComponent('Flash');
+        $this->loadComponent('Authentication.Authentication');
 
         /*
          * Enable the following component for recommended CakePHP form protection settings.
          * see https://book.cakephp.org/5/en/controllers/components/form-protection.html
          */
         //$this->loadComponent('FormProtection');
+    }
+
+    /**
+     * Before filter method
+     *
+     * @param \Cake\Event\EventInterface $event The event
+     * @return void
+     */
+    public function beforeFilter(EventInterface $event)
+    {
+        parent::beforeFilter($event);
+        
+        // Configuração para redirecionar usuários não autenticados
+        // Por padrão, todas as actions exigem autenticação
+        // As actions públicas devem ser explicitamente permitidas nos controllers filhos
+        $this->Authentication->addUnauthenticatedActions([]);
+        
+        // Define o usuário atual para todas as views
+        $identity = $this->Authentication->getIdentity();
+        if ($identity) {
+            $this->set('currentUser', $identity->getOriginalData());
+        }
     }
 }

@@ -6,6 +6,7 @@ namespace App\Controller;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Cake\Log\Log;
+use Cake\Event\EventInterface;
 
 /**
  * Checklists Controller
@@ -15,17 +16,54 @@ use Cake\Log\Log;
 class ChecklistsController extends AppController
 {
     /**
+     * Initialization method
+     *
+     * @return void
+     */
+    public function initialize(): void
+    {
+        parent::initialize();
+        $this->loadComponent('Authentication.Authentication');
+    }
+
+    /**
+     * Before filter method
+     *
+     * @param \Cake\Event\EventInterface $event The event
+     * @return void
+     */
+    public function beforeFilter(EventInterface $event)
+    {
+        parent::beforeFilter($event);
+        
+        // Todas as actions deste controller exigem autenticação
+        $this->Authentication->addUnauthenticatedActions([]);
+    }
+
+    /**
      * Index method
      *
      * @return \Cake\Http\Response|null|void Renders view
      */
     public function index()
     {
+        // Buscar contagens para os cards do dashboard
+        $maquinasCount = $this->fetchTable('Maquinas')->find()->count();
+        $equipamentosCount = $this->fetchTable('Equipamentos')->find()->count();
+        $checklistsCount = $this->Checklists->find()->count();
+        
+        // Contar usuários apenas se for admin
+        $user = $this->Authentication->getIdentity();
+        $usersCount = null;
+        if ($user && $user->role === 'admin') {
+            $usersCount = $this->fetchTable('Users')->find()->count();
+        }
+
         $query = $this->Checklists->find()
             ->contain(['Maquinas']);
         $checklists = $this->paginate($query);
 
-        $this->set(compact('checklists'));
+        $this->set(compact('checklists', 'maquinasCount', 'equipamentosCount', 'checklistsCount', 'usersCount'));
     }
 
     /**
@@ -100,6 +138,14 @@ class ChecklistsController extends AppController
     {
         $this->request->allowMethod(['post', 'delete']);
         $checklist = $this->Checklists->get($id);
+        
+        // Verificar se é admin para permitir exclusão
+        $user = $this->Authentication->getIdentity();
+        if (!$user || $user->role !== 'admin') {
+            $this->Flash->error(__('Você não tem permissão para excluir checklists.'));
+            return $this->redirect(['action' => 'index']);
+        }
+        
         if ($this->Checklists->delete($checklist)) {
             $this->Flash->success(__('The checklist has been deleted.'));
         } else {
@@ -109,6 +155,11 @@ class ChecklistsController extends AppController
         return $this->redirect(['action' => 'index']);
     }
 
+    /**
+     * Get equipamentos method
+     *
+     * @return \Cake\Http\Response|null
+     */
     public function getEquipamentos()
     {
         $this->request->allowMethod(['post']);
@@ -123,13 +174,18 @@ class ChecklistsController extends AppController
             ->withStringBody(json_encode($equipamentos));
     }
 
+    /**
+     * Generate PDF method
+     *
+     * @param string|null $id Checklist id.
+     * @return \Cake\Http\Response|null
+     */
     public function generatePdf($id = null)
     {
         // 1. Carregar os dados
         $checklist = $this->Checklists->get($id, contain: ['Maquinas', 'ChecklistEquipamentos.Equipamentos']);
         $this->set(compact('checklist'));
 
-        // 2. Configurar a view e renderizar
         // 2. Configurar a view e renderizar manualmente
         $view = new \Cake\View\View();
         $view->setTemplatePath('Checklists/pdf');
@@ -138,6 +194,7 @@ class ChecklistsController extends AppController
         $view->disableAutoLayout();
 
         $html = $view->render();
+        
         // 3. Gerar o PDF com Dompdf
         $options = new \Dompdf\Options();
         $options->set('isRemoteEnabled', true);

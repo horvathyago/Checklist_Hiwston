@@ -1,0 +1,40 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+/* Suaviza todas as animações por padrão */
+* {
+    transition: color var(--transition-micro), 
+                background-color var(--transition-smooth),
+                border-color var(--transition-smooth),
+                box-shadow var(--transition-smooth),
+                transform var(--transition-bouncy);
+}
+
+body {
+    background: var(--bg-light);
+    color: var(--text-dark);
+    transition: background var(--transition-ultra-smooth), 
+                color var(--transition-ultra-smooth);
+}
+
+/* Modo escuro com transição perfeita */
+body.dark-mode {
+    background: var(--bg-dark);
+    color: var(--text-light);
+}
+
+/* Melhora a performance das transições */
+.card,
+.stat-card,
+.sidebar,
+.main-content,
+.dashboard-header,
+.table-container {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
