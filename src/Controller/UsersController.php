@@ -55,16 +55,23 @@ class UsersController extends AppController
 
     public function index()
     {
+        // Buscar contagens para os cards do dashboard
+        $maquinasCount = $this->fetchTable('Maquinas')->find()->count();
+        $equipamentosCount = $this->fetchTable('Equipamentos')->find()->count();
+        $checklistsCount = $this->fetchTable('Checklists')->find()->count();
+        
+        // Contar usuários apenas se for admin
         $user = $this->Authentication->getIdentity();
-
-        if (!$user || $user->role !== 'admin') {
-            $this->Flash->error(__('Você não tem permissão para acessar esta página.'));
-            return $this->redirect(['controller' => 'Checklists', 'action' => 'index']);
+        $usersCount = null;
+        if ($user && $user->role === 'admin') {
+            $usersCount = $this->Users->find()->count();
         }
 
-        // Busca todos os usuários sem paginação
-        $users = $this->Users->find()->order(['created' => 'DESC'])->all();
-        $this->set(compact('users'));
+        $query = $this->Users->find()
+            ->order(['Users.id' => 'ASC']);
+        $maquinas = $this->paginate($query);
+
+        $this->set(compact('maquinas', 'maquinasCount', 'equipamentosCount', 'checklistsCount', 'usersCount'));
     }
 
     public function add()

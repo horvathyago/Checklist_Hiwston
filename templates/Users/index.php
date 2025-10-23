@@ -69,17 +69,45 @@ $isAdmin = $currentUser && $currentUser->role === 'admin';
         <div class="dashboard-main content-wrapper">
             <!-- Cards -->
             <section class="stats-section">
-                <h2 class="section-title">Resumo Geral</h2>
+ <h2 class="section-title">Resumo Geral</h2>
                 <div class="stats-grid <?= $isAdmin ? 'has-admin-cards' : '' ?>">
                     <a href="<?= $this->Url->build(['controller' => 'Maquinas', 'action' => 'index']) ?>" class="stat-card-link">
-                        <div class="stat-card"><div class="stat-icon">🏭</div><div class="stat-info"><span class="stat-number"><?= $maquinasCount ?? '0' ?></span><span class="stat-label">Máquinas</span></div></div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🏭</div>
+                            <div class="stat-info">
+                                <span class="stat-number"><?= $maquinasCount ?? '0' ?></span>
+                                <span class="stat-label">Máquinas</span>
+                            </div>
+                        </div>
                     </a>
                     <a href="<?= $this->Url->build(['controller' => 'Equipamentos', 'action' => 'index']) ?>" class="stat-card-link">
-                        <div class="stat-card"><div class="stat-icon">🔧</div><div class="stat-info"><span class="stat-number"><?= $equipamentosCount ?? '0' ?></span><span class="stat-label">Equipamentos</span></div></div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🔧</div>
+                            <div class="stat-info">
+                                <span class="stat-number"><?= $equipamentosCount ?? '0' ?></span>
+                                <span class="stat-label">Equipamentos</span>
+                            </div>
+                        </div>
                     </a>
-                    <?php if ($isAdmin): ?>
+                    <a href="<?= $this->Url->build(['controller' => 'Checklists', 'action' => 'index']) ?>" class="stat-card-link">
+                        <div class="stat-card">
+                            <div class="stat-icon">📋</div>
+                            <div class="stat-info">
+                                <span class="stat-number"><?= $checklistsCount ?? '0' ?></span>
+                                <span class="stat-label">Checklists</span>
+                            </div>
+                        </div>
+                    </a>
+                     <?php if ($isAdmin && isset($usersCount)): ?>
+                    <!-- Card adicional apenas para admin -->
                     <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'index']) ?>" class="stat-card-link admin-card">
-                        <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-info"><span class="stat-number"><?= count($users) ?></span><span class="stat-label">Usuários</span></div></div>
+                        <div class="stat-card">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-info">
+                                <span class="stat-number"><?= $usersCount ?></span>
+                                <span class="stat-label">Usuários</span>
+                            </div>
+                        </div>
                     </a>
                     <?php endif; ?>
                 </div>

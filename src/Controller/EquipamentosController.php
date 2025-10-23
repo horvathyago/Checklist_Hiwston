@@ -17,10 +17,23 @@ class EquipamentosController extends AppController
      */
     public function index()
     {
-        $query = $this->Equipamentos->find();
+        // Buscar contagens para os cards do dashboard
+        $maquinasCount = $this->fetchTable('Maquinas')->find()->count();
+        $equipamentosCount = $this->Equipamentos->find()->count();
+        $checklistsCount = $this->fetchTable('Checklists')->find()->count();
+        
+        // Contar usuários apenas se for admin
+        $user = $this->Authentication->getIdentity();
+        $usersCount = null;
+        if ($user && $user->role === 'admin') {
+            $usersCount = $this->fetchTable('Users')->find()->count();
+        }
+
+        $query = $this->Equipamentos->find()
+            ->contain(['Maquinas']);
         $equipamentos = $this->paginate($query);
 
-        $this->set(compact('equipamentos'));
+        $this->set(compact('equipamentos', 'maquinasCount', 'equipamentosCount', 'checklistsCount', 'usersCount'));
     }
 
     /**

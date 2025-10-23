@@ -17,10 +17,24 @@ class MaquinasController extends AppController
      */
     public function index()
     {
-        $query = $this->Maquinas->find();
+        // Buscar contagens para os cards do dashboard
+        $maquinasCount = $this->Maquinas->find()->count();
+        $equipamentosCount = $this->fetchTable('Equipamentos')->find()->count();
+        $checklistsCount = $this->fetchTable('Checklists')->find()->count();
+        
+        // Contar usuários apenas se for admin
+        $user = $this->Authentication->getIdentity();
+        $usersCount = null;
+        if ($user && $user->role === 'admin') {
+            $usersCount = $this->fetchTable('Users')->find()->count();
+        }
+
+        $query = $this->Maquinas->find()
+            ->contain(['Equipamentos'])
+            ->order(['Maquinas.id' => 'ASC']);
         $maquinas = $this->paginate($query);
 
-        $this->set(compact('maquinas'));
+        $this->set(compact('maquinas', 'maquinasCount', 'equipamentosCount', 'checklistsCount', 'usersCount'));
     }
 
     /**

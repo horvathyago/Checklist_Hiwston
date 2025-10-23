@@ -120,6 +120,18 @@ if ($this->request->getAttribute('identity')) {
                             </div>
                         </div>
                     </a>
+                     <?php if ($isAdmin && isset($usersCount)): ?>
+                    <!-- Card adicional apenas para admin -->
+                    <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'index']) ?>" class="stat-card-link admin-card">
+                        <div class="stat-card">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-info">
+                                <span class="stat-number"><?= $usersCount ?></span>
+                                <span class="stat-label">Usuários</span>
+                            </div>
+                        </div>
+                    </a>
+                    <?php endif; ?>
                 </div>
             </section>
 
