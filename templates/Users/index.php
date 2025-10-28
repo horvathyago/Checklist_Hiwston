@@ -2,10 +2,11 @@
 $this->assign('title', 'Usuários - Sistema de Checklist');
 $this->Html->css([
     'variables', 'reset', 'layout', 'sidebar', 'header', 'buttons',
-    'cards', 'tables', 'forms', 'dark-mode', 'utilities', 'professional'
+    'cards', 'tables', 'forms', 'dark-mode', 'utilities', 'professional',
+    'modal' // CSS do modal
 ], ['block' => true]);
 
-$this->Html->script('dashboard', ['block' => true]);
+$this->Html->script(['dashboard','modal'], ['block' => true]);
 
 $currentUser = $currentUser ?? $this->request->getAttribute('identity');
 $isAdmin = $currentUser && $currentUser->role === 'admin';
@@ -69,7 +70,7 @@ $isAdmin = $currentUser && $currentUser->role === 'admin';
         <div class="dashboard-main content-wrapper">
             <!-- Cards -->
             <section class="stats-section">
- <h2 class="section-title">Resumo Geral</h2>
+                <h2 class="section-title">Resumo Geral</h2>
                 <div class="stats-grid <?= $isAdmin ? 'has-admin-cards' : '' ?>">
                     <a href="<?= $this->Url->build(['controller' => 'Maquinas', 'action' => 'index']) ?>" class="stat-card-link">
                         <div class="stat-card">
@@ -99,7 +100,6 @@ $isAdmin = $currentUser && $currentUser->role === 'admin';
                         </div>
                     </a>
                      <?php if ($isAdmin && isset($usersCount)): ?>
-                    <!-- Card adicional apenas para admin -->
                     <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'index']) ?>" class="stat-card-link admin-card">
                         <div class="stat-card">
                             <div class="stat-icon">👥</div>
@@ -113,13 +113,13 @@ $isAdmin = $currentUser && $currentUser->role === 'admin';
                 </div>
             </section>
 
-            <!-- Table -->
+            <!-- Tabela de Usuários -->
             <section class="checklist-section table-container">
                 <div class="section-header flex-between">
                     <h2 class="section-title">Todos os Usuários</h2>
                     <div class="filters flex-gap">
                         <input type="text" placeholder="Buscar usuário..." class="filter-input form-input" id="searchInput">
-                        <a href="<?= $this->Url->build(['action'=>'add']) ?>" class="btn btn-secondary">➕ Novo Usuário</a>
+                        <button class="btn btn-primary" id="btnAddUser">➕ Novo Usuário</button>
                     </div>
                 </div>
 
@@ -159,13 +159,60 @@ $isAdmin = $currentUser && $currentUser->role === 'admin';
                         </tbody>
                     </table>
                 </div>
-
-                <!-- Paginação -->
-               
-                </div>
             </section>
         </div>
     </main>
 </div>
 
-<script src="<?= $this->Url->script('dashboard.js') ?>"></script>
+<!-- MODAL DE NOVO USUÁRIO -->
+<div id="userModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" id="closeUserModal">&times;</span>
+        <div id="userModalBody"></div> <!-- começa vazio -->
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Busca
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const term = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.checklist-table tbody tr');
+            rows.forEach(row => {
+                const name = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                row.style.display = name.includes(term) ? '' : 'none';
+            });
+        });
+    }
+
+    // --- MODAL USUÁRIO ---
+    const btnUser = document.getElementById('btnAddUser');
+    const modalUser = document.getElementById('userModal');
+    const closeModalUser = document.getElementById('closeUserModal');
+    const modalBodyUser = document.getElementById('userModalBody');
+
+    if (btnUser && modalUser) {
+        btnUser.addEventListener('click', function(e) {
+            e.preventDefault();
+            modalUser.style.display = 'flex';
+            modalBodyUser.innerHTML = '<p class="loading">Carregando formulário...</p>';
+
+            fetch("<?= $this->Url->build(['action'=>'add']) ?>")
+                .then(res => res.text())
+                .then(html => {
+                    modalBodyUser.innerHTML = html;
+                    const aside = modalBodyUser.querySelector('aside.column');
+                    if (aside) aside.remove();
+                })
+                .catch(() => {
+                    modalBodyUser.innerHTML = '<p style="color:red; text-align:center;">Erro ao carregar formulário.</p>';
+                });
+        });
+
+        closeModalUser.addEventListener('click', () => modalUser.style.display = 'none');
+        window.addEventListener('click', e => { if (e.target === modalUser) modalUser.style.display = 'none'; });
+    }
+});
+</script>

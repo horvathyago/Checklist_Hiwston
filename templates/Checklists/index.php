@@ -17,17 +17,14 @@ $this->Html->css([
 
 $this->Html->script('dashboard', ['block' => true]);
 
-// VERIFICAÇÃO DO USUÁRIO ADMIN - CORRIGIDO
+// VERIFICAÇÃO DO USUÁRIO ADMIN
 $isAdmin = false;
 $currentUser = null;
 
 if ($this->request->getAttribute('identity')) {
     $currentUser = $this->request->getAttribute('identity');
-    
-    // CONDIÇÃO CORRIGIDA - campo 'role' com valor 'admin'
     $isAdmin = ($currentUser->role === 'admin');
 }
-
 ?>
 
 <div class="app-container">
@@ -36,19 +33,15 @@ if ($this->request->getAttribute('identity')) {
         <div class="sidebar-header">
             <img src="<?= $this->Url->image('logo-hiwston.png') ?>" alt="Logo" class="sidebar-logo">
         </div>
-
         <div class="sidebar-nav">
             <a href="<?= $this->Url->build(['controller' => 'Checklists', 'action' => 'index']) ?>" class="sidebar-link active">
                 <span class="sidebar-icon">🏠</span><span class="sidebar-text">Dashboard</span>
             </a>
-            
             <?php if ($isAdmin): ?>
-            <!-- BOTÃO APENAS PARA ADMIN -->
             <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'index']) ?>" class="sidebar-link admin-only">
                 <span class="sidebar-icon">👥</span><span class="sidebar-text">Usuários</span>
             </a>
             <?php endif; ?>
-            
             <a href="<?= $this->Url->build(['controller' => 'Maquinas', 'action' => 'index']) ?>" class="sidebar-link">
                 <span class="sidebar-icon">🏭</span><span class="sidebar-text">Máquinas</span>
             </a>
@@ -58,17 +51,11 @@ if ($this->request->getAttribute('identity')) {
             <a href="<?= $this->Url->build(['controller' => 'Checklists', 'action' => 'add']) ?>" class="sidebar-link">
                 <span class="sidebar-icon">➕</span><span class="sidebar-text">Novo Checklist</span>
             </a>
-
-            <!-- BOTÃO DE LOGOUT -->
             <div class="sidebar-logout">
                 <?= $this->Form->postLink(
                     '<span class="sidebar-icon">🚪</span><span class="sidebar-text">Sair</span>',
                     ['controller' => 'Users', 'action' => 'logout'],
-                    [
-                        'escape' => false,
-                        'class' => 'sidebar-link logout-link',
-                        'confirm' => 'Tem certeza que deseja sair?'
-                    ]
+                    ['escape' => false, 'class' => 'sidebar-link logout-link', 'confirm' => 'Tem certeza que deseja sair?']
                 ) ?>
             </div>
         </div>
@@ -84,91 +71,21 @@ if ($this->request->getAttribute('identity')) {
             <div class="header-right">
                 <button id="themeToggle" class="theme-toggle" title="Alternar tema">🌙</button>
                 <span class="current-time"><?= date('d/m/Y') ?></span>
-                
-                <!-- Mostrar role do usuário -->
                 <?php if ($currentUser): ?>
                 <div class="user-info">
                     <span class="user-name"><?= h($currentUser->username ?? $currentUser->email) ?></span>
-                    <span class="user-role">
-                        <?= $isAdmin ? '👑 Admin' : '👤 Usuário' ?>
-                    </span>
-                    <?= $this->Form->postLink(
-                        '🚪 Sair',
-                        ['controller' => 'Users', 'action' => 'logout'],
-                        [
-                            'class' => 'btn-logout',
-                            'confirm' => 'Tem certeza que deseja sair?'
-                        ]
-                    ) ?>
+                    <span class="user-role"><?= $isAdmin ? '👑 Admin' : '👤 Usuário' ?></span>
+                    <?= $this->Form->postLink('🚪 Sair', ['controller' => 'Users', 'action' => 'logout'], ['class' => 'btn-logout', 'confirm' => 'Tem certeza que deseja sair?']) ?>
                 </div>
                 <?php endif; ?>
             </div>
         </header>
 
         <div class="dashboard-main content-wrapper">
-            <!-- Cards com links -->
-            <section class="stats-section">
-                <h2 class="section-title">Resumo Geral</h2>
-                <div class="stats-grid <?= $isAdmin ? 'has-admin-cards' : '' ?>">
-                    <a href="<?= $this->Url->build(['controller' => 'Maquinas', 'action' => 'index']) ?>" class="stat-card-link">
-                        <div class="stat-card">
-                            <div class="stat-icon">🏭</div>
-                            <div class="stat-info">
-                                <span class="stat-number"><?= $maquinasCount ?? '0' ?></span>
-                                <span class="stat-label">Máquinas</span>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="<?= $this->Url->build(['controller' => 'Equipamentos', 'action' => 'index']) ?>" class="stat-card-link">
-                        <div class="stat-card">
-                            <div class="stat-icon">🔧</div>
-                            <div class="stat-info">
-                                <span class="stat-number"><?= $equipamentosCount ?? '0' ?></span>
-                                <span class="stat-label">Equipamentos</span>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="<?= $this->Url->build(['controller' => 'Checklists', 'action' => 'index']) ?>" class="stat-card-link">
-                        <div class="stat-card">
-                            <div class="stat-icon">📋</div>
-                            <div class="stat-info">
-                                <span class="stat-number"><?= $checklistsCount ?? '0' ?></span>
-                                <span class="stat-label">Checklists</span>
-                            </div>
-                        </div>
-                    </a>
-                    
-                    <?php if ($isAdmin && isset($usersCount)): ?>
-                    <!-- Card adicional apenas para admin -->
-                    <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'index']) ?>" class="stat-card-link admin-card">
-                        <div class="stat-card">
-                            <div class="stat-icon">👥</div>
-                            <div class="stat-info">
-                                <span class="stat-number"><?= $usersCount ?></span>
-                                <span class="stat-label">Usuários</span>
-                            </div>
-                        </div>
-                    </a>
-                    <?php endif; ?>
-                </div>
-            </section>
-
-            <!-- Tabela -->
+            <!-- Tabela Checklists -->
             <section class="checklist-section table-container">
                 <div class="section-header flex-between">
                     <h2 class="section-title">Todos os Checklists</h2>
-                    <div class="filters flex-gap">
-                        <input type="text" placeholder="Buscar por nome..." class="filter-input form-input">
-                        <input type="date" class="filter-input form-input">
-                        <button class="filter-btn btn btn-primary">Buscar</button>
-                        
-                        <?php if ($isAdmin): ?>
-                        <!-- Botão de ação rápida para admin -->
-                        <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'add']) ?>" class="btn btn-secondary admin-btn">
-                           ➕ Novo Usuário
-                        </a>
-                        <?php endif; ?>
-                    </div>
                 </div>
 
                 <div class="checklist-table">
@@ -188,39 +105,19 @@ if ($this->request->getAttribute('identity')) {
                                     <tr>
                                         <td><?= $checklist->id ?></td>
                                         <td><?= h($checklist->cliente) ?></td>
-                                        <td>
-                                            <?php 
-                                            if ($checklist->data instanceof \Cake\I18n\Time || $checklist->data instanceof \Cake\I18n\Date) {
-                                                echo $checklist->data->format('d/m/Y');
-                                            } else {
-                                                echo date('d/m/Y', strtotime($checklist->data));
-                                            }
-                                            ?>
-                                        </td>
-                                        <td>
-                                            <span class="status-badge status-<?= strtolower($checklist->status) ?>">
-                                                <?= h($checklist->status) ?>
-                                            </span>
-                                        </td>
+                                        <td><?= $checklist->data instanceof \Cake\I18n\Time ? $checklist->data->format('d/m/Y') : date('d/m/Y', strtotime($checklist->data)) ?></td>
+                                        <td><span class="status-badge status-<?= strtolower($checklist->status) ?>"><?= h($checklist->status) ?></span></td>
                                         <td class="actions">
                                             <a href="<?= $this->Url->build(['controller' => 'Checklists', 'action' => 'view', $checklist->id]) ?>" 
-                                            class="btn-view btn-action" 
-                                            title="Visualizar"
-                                            data-checklist-id="<?= $checklist->id ?>">👁️</a>
+                                               class="btn-view btn-action" title="Visualizar"
+                                               data-checklist-id="<?= $checklist->id ?>">👁️</a>
                                             <a href="<?= $this->Url->build(['controller' => 'Checklists', 'action' => 'edit', $checklist->id]) ?>" 
-                                            class="btn-edit btn-action" title="Editar">✏️</a>
-                                            
+                                               class="btn-edit btn-action" title="Editar"
+                                               data-checklist-id="<?= $checklist->id ?>">✏️</a>
                                             <?php if ($isAdmin): ?>
-                                            <!-- Apenas admin pode excluir -->
-                                            <?= $this->Form->postLink('🗑️', 
-                                                ['controller' => 'Checklists', 'action' => 'delete', $checklist->id], 
-                                                ['confirm' => 'Tem certeza que deseja excluir este checklist?', 
-                                                'class' => 'btn-delete btn-action', 
-                                                'title' => 'Excluir', 
-                                                'escape' => false]
-                                            ) ?>
+                                            <?= $this->Form->postLink('🗑️', ['controller' => 'Checklists', 'action' => 'delete', $checklist->id], ['confirm' => 'Tem certeza que deseja excluir este checklist?', 'class' => 'btn-delete btn-action', 'title' => 'Excluir', 'escape' => false]) ?>
+                                            <?= $this->Html->link('📄 PDF', ['controller' => 'Checklists', 'action' => 'generatePdf', $checklist->id], ['class' => 'btn-action', 'target' => '_blank', 'title' => 'Gerar PDF']) ?>
                                             <?php else: ?>
-                                            <!-- Usuário normal não vê o botão de excluir -->
                                             <span class="btn-action disabled-action" title="Apenas administradores podem excluir">🗑️</span>
                                             <?php endif; ?>
                                         </td>
@@ -238,3 +135,127 @@ if ($this->request->getAttribute('identity')) {
         </div>
     </main>
 </div>
+
+<!-- MODAL DE VISUALIZAÇÃO -->
+<div id="checklistModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Visualizar Checklist</h3>
+            <span class="close-btn" id="closeChecklistModal">&times;</span>
+        </div>
+        <div id="checklistModalBody" class="modal-body">
+            <p class="loading">Carregando informações...</p>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE EDIÇÃO -->
+<div id="editChecklistModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Editar Checklist</h3>
+            <span class="close-btn" id="closeEditChecklistModal">&times;</span>
+        </div>
+        <div id="editChecklistModalBody" class="modal-body">
+            <p class="loading">Carregando formulário...</p>
+        </div>
+    </div>
+</div>
+
+<!-- JS para modais -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // Visualizar
+    const modal = document.getElementById("checklistModal");
+    const modalBody = document.getElementById("checklistModalBody");
+    const closeBtn = document.getElementById("closeChecklistModal");
+
+    document.querySelectorAll(".btn-view").forEach(btn => {
+        btn.addEventListener("click", e => {
+            e.preventDefault();
+            const url = btn.getAttribute("href");
+            modal.style.display = "flex";
+            modalBody.innerHTML = "<p class='loading'>Carregando informações...</p>";
+            fetch(url)
+                .then(response => response.text())
+                .then(html => modalBody.innerHTML = html)
+                .catch(() => modalBody.innerHTML = "<p class='error'>Erro ao carregar o checklist.</p>");
+        });
+    });
+
+    closeBtn.addEventListener("click", () => modal.style.display = "none");
+    modal.addEventListener("click", e => { if(e.target === modal) modal.style.display = "none"; });
+
+    // Editar
+    const editModal = document.getElementById("editChecklistModal");
+    const editModalBody = document.getElementById("editChecklistModalBody");
+    const closeEditBtn = document.getElementById("closeEditChecklistModal");
+
+    document.querySelectorAll(".btn-edit").forEach(btn => {
+        btn.addEventListener("click", e => {
+            e.preventDefault();
+            const url = btn.getAttribute("href");
+            editModal.style.display = "flex";
+            editModalBody.innerHTML = "<p class='loading'>Carregando formulário...</p>";
+            fetch(url)
+                .then(response => response.text())
+                .then(html => editModalBody.innerHTML = html)
+                .catch(() => editModalBody.innerHTML = "<p class='error'>Erro ao carregar o formulário.</p>");
+        });
+    });
+
+    closeEditBtn.addEventListener("click", () => editModal.style.display = "none");
+    editModal.addEventListener("click", e => { if(e.target === editModal) editModal.style.display = "none"; });
+});
+</script>
+
+<style>
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+}
+
+.modal-content {
+    background: #fff;
+    color: #000;
+    padding: 20px;
+    border-radius: 10px;
+    width: 85%;
+    max-width: 900px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+    z-index: 10;
+}
+
+.modal-body {
+    padding-top: 10px;
+    overflow-y: auto;
+}
+
+.close-btn {
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.loading { font-style: italic; }
+.error { color: red; }
+</style>
