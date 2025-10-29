@@ -74,10 +74,18 @@ class ChecklistsController extends AppController
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function view($id = null)
-    {
-        $checklist = $this->Checklists->get($id, contain: ['Maquinas', 'ChecklistEquipamentos']);
-        $this->set(compact('checklist'));
+{
+    $checklist = $this->Checklists->get($id, [
+        'contain' => ['ChecklistEquipamentos', 'Maquinas']
+    ]);
+
+    if ($this->request->is('ajax')) {
+        $this->viewBuilder()->disableAutoLayout();
     }
+
+    $this->set(compact('checklist'));
+}
+
 
     /**
      * Add method

@@ -15,22 +15,14 @@ use Cake\ORM\Locator\TableLocator;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
 
-// 🔥 Importações para o sistema de autenticação
 use Authentication\AuthenticationService;
 use Authentication\AuthenticationServiceInterface;
 use Authentication\Middleware\AuthenticationMiddleware;
+use Authentication\Middleware\AuthenticationRequiredMiddleware;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * Application setup class.
- *
- * @extends \Cake\Http\BaseApplication<\App\Application>
- */
 class Application extends BaseApplication implements \Authentication\AuthenticationServiceProviderInterface
 {
-    /**
-     * Load all the application configuration and bootstrap logic.
-     */
     public function bootstrap(): void
     {
         parent::bootstrap();
@@ -43,9 +35,6 @@ class Application extends BaseApplication implements \Authentication\Authenticat
         }
     }
 
-    /**
-     * Setup the middleware queue your application will use.
-     */
     public function middleware(MiddlewareQueue $middlewareQueue): MiddlewareQueue
     {
         $middlewareQueue
@@ -58,34 +47,43 @@ class Application extends BaseApplication implements \Authentication\Authenticat
             ->add(new CsrfProtectionMiddleware([
                 'httponly' => true,
             ]))
-            // 🔥 Adiciona o middleware de autenticação
+            // 🔥 Middleware principal de autenticação
             ->add(new AuthenticationMiddleware($this));
 
         return $middlewareQueue;
     }
 
-    /**
-     * Configura o serviço de autenticação
-     */
     public function getAuthenticationService(ServerRequestInterface $request): AuthenticationServiceInterface
     {
-        $service = new AuthenticationService();
-
-        // 🔥 Define onde redirecionar se o usuário não estiver autenticado
-        $service->setConfig([
+        $service = new AuthenticationService([
+            // 🔥 Redireciona automaticamente se não estiver autenticado
             'unauthenticatedRedirect' => '/users/login',
             'queryParam' => 'redirect',
         ]);
 
-        // 🔥 Campos usados no login
+        // 🔥 Campos usados para login
         $fields = [
             'username' => 'email',
             'password' => 'password',
         ];
 
-        // 🔥 Adiciona os identificadores e autenticadores
-        $service->loadIdentifier('Authentication.Password', compact('fields'));
-        $service->loadAuthenticator('Authentication.Session');
+        // 🔥 Identificador (verifica email + senha com hash)
+       $service->loadIdentifier('Authentication.Password', [
+            'fields' => [
+                'username' => 'email',
+                'password' => 'password'
+            ],
+            'passwordHasher' => [
+                'className' => 'Authentication.Default',
+            ],
+        ]);
+
+
+        // 🔥 Autenticadores
+        $service->loadAuthenticator('Authentication.Session', [
+            'sessionKey' => 'Auth', // nome mais previsível e compatível
+        ]);
+
         $service->loadAuthenticator('Authentication.Form', [
             'fields' => $fields,
             'loginUrl' => '/users/login',
@@ -94,9 +92,6 @@ class Application extends BaseApplication implements \Authentication\Authenticat
         return $service;
     }
 
-    /**
-     * Register application container services.
-     */
     public function services(ContainerInterface $container): void
     {
     }

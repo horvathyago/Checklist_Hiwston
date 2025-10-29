@@ -30,28 +30,38 @@ class UsersController extends AppController
         $this->Authentication->allowUnauthenticated(['login', 'add', 'logout']);
     }
 
-    public function login()
-    {
-        $this->request->allowMethod(['get', 'post']);
-        $result = $this->Authentication->getResult();
+  public function login()
+{
+    $this->request->allowMethod(['get', 'post']);
+    $result = $this->Authentication->getResult();
 
-        // Se já está autenticado, redireciona para a página principal
-        if ($result && $result->isValid()) {
-            $target = $this->Authentication->getLoginRedirect() ?? ['controller' => 'Checklists', 'action' => 'index'];
-            return $this->redirect($target);
-        }
-
-        // Se fez POST e não está válido, mostra erro
-        if ($this->request->is('post') && !$result->isValid()) {
-            $this->Flash->error('Usuário ou senha incorretos.');
-        }
+    if ($result && $result->isValid()) {
+        $target = $this->Authentication->getLoginRedirect() ?? ['controller' => 'Checklists', 'action' => 'index'];
+        return $this->redirect($target);
     }
 
-    public function logout()
-    {
+    if ($this->request->is('post') && (!$result || !$result->isValid())) {
+        $this->Flash->error('Usuário ou senha incorretos.');
+    }
+}
+
+public function logout()
+{
+    $result = $this->Authentication->getResult();
+    if ($result && $result->isValid()) {
         $this->Authentication->logout();
-        return $this->redirect(['action' => 'login']);
+        $this->request->getSession()->destroy();
+        $this->Flash->success('Você foi desconectado com sucesso.');
     }
+    return $this->redirect(['controller' => 'Users', 'action' => 'login']);
+}
+
+
+
+
+
+
+
 
     public function index()
     {

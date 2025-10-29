@@ -12,10 +12,14 @@ $this->Html->css([
     'forms',
     'dark-mode',
     'utilities',
-    'professional'
+    'professional',
+    'modal'
 ], ['block' => true]);
 
-$this->Html->script('dashboard', ['block' => true]);
+$this->Html->script([
+    'dashboard',
+    'modal'
+], ['block' => true]);
 
 // VERIFICAÇÃO DO USUÁRIO ADMIN
 $isAdmin = false;
@@ -89,7 +93,7 @@ if ($this->request->getAttribute('identity')) {
         </header>
 
         <div class="dashboard-main content-wrapper">
-            <!-- Cards -->
+            <!-- Cards de contadores -->
             <section class="stats-section">
                 <h2 class="section-title">Resumo Geral</h2>
                 <div class="stats-grid <?= $isAdmin ? 'has-admin-cards' : '' ?>">
@@ -120,8 +124,7 @@ if ($this->request->getAttribute('identity')) {
                             </div>
                         </div>
                     </a>
-                     <?php if ($isAdmin && isset($usersCount)): ?>
-                    <!-- Card adicional apenas para admin -->
+                    <?php if ($isAdmin && isset($usersCount)): ?>
                     <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'index']) ?>" class="stat-card-link admin-card">
                         <div class="stat-card">
                             <div class="stat-icon">👥</div>
@@ -141,7 +144,7 @@ if ($this->request->getAttribute('identity')) {
                     <h2 class="section-title">Todos os Equipamentos</h2>
                     <div class="filters flex-gap">
                         <input type="text" placeholder="Buscar equipamento..." class="filter-input form-input" id="searchInput">
-                        <a href="<?= $this->Url->build(['action' => 'add']) ?>" class="btn btn-primary">➕ Novo Equipamento</a>
+                        <a href="<?= $this->Url->build(['action' => 'add']) ?>" class="btn btn-primary" id="btnAddEquipamento">➕ Novo Equipamento</a>
                     </div>
                 </div>
 
@@ -163,8 +166,8 @@ if ($this->request->getAttribute('identity')) {
                                         <td><?= h($equipamento->nome) ?></td>
                                         <td><?= $equipamento->quantidade_padrao ?></td>
                                         <td class="actions">
-                                            <a href="<?= $this->Url->build(['action' => 'view', $equipamento->id]) ?>" class="btn-action" title="Ver">🔍</a>
-                                            <a href="<?= $this->Url->build(['action' => 'edit', $equipamento->id]) ?>" class="btn-action" title="Editar">✏️</a>
+                                            <a href="<?= $this->Url->build(['action' => 'view', $equipamento->id]) ?>" class="btn-view btn-action" title="Ver">🔍</a>
+                                            <a href="<?= $this->Url->build(['action' => 'edit', $equipamento->id]) ?>" class="btn-edit btn-action" title="Editar">✏️</a>
                                             <?php if ($isAdmin): ?>
                                             <?= $this->Form->postLink('🗑️', ['action' => 'delete', $equipamento->id], [
                                                 'confirm' => 'Tem certeza que deseja excluir este equipamento?',
@@ -188,8 +191,19 @@ if ($this->request->getAttribute('identity')) {
     </main>
 </div>
 
+<!-- MODAL PARA VIEW/EDIT EQUIPAMENTO -->
+<div id="equipamentoModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" id="closeModal">&times;</span>
+        <div id="modalBody">
+            <p class="loading">Carregando...</p>
+        </div>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Filtro de busca
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         searchInput.addEventListener('input', function() {
@@ -201,5 +215,69 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // Modal view/edit
+    const modal = document.getElementById('equipamentoModal');
+    const modalBody = document.getElementById('modalBody');
+    const closeBtn = document.getElementById('closeModal');
+
+    function openModal(url) {
+        modal.style.display = "flex";
+        modalBody.innerHTML = "<p class='loading'>Carregando...</p>";
+        fetch(url)
+            .then(r => r.text())
+            .then(html => modalBody.innerHTML = html)
+            .catch(() => modalBody.innerHTML = "<p class='error'>Erro ao carregar.</p>");
+    }
+
+    document.querySelectorAll(".btn-view, .btn-edit").forEach(btn => {
+        btn.addEventListener("click", function(e) {
+            e.preventDefault();
+            openModal(this.href);
+        });
+    });
+
+    closeBtn.addEventListener("click", () => modal.style.display = "none");
+    modal.addEventListener("click", e => { if(e.target === modal) modal.style.display = "none"; });
 });
 </script>
+
+<style>
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+}
+.modal-content {
+    background: #fff;
+    color: #000;
+    padding: 20px;
+    border-radius: 10px;
+    width: 85%;
+    max-width: 900px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.modal-body {
+    padding-top: 40px;
+    overflow-y: auto;
+}
+.loading { font-style: italic; }
+.error { color: red; }
+</style>

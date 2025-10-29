@@ -1,200 +1,123 @@
-/* modal.css */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-    opacity: 0;
-    visibility: hidden;
-    transition: all var(--transition-ultra-smooth);
-    backdrop-filter: blur(5px);
+/* Fundo do modal */
+.modal {
+  display: none; /* escondido por padrão */
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
 }
 
-.modal-overlay.active {
-    opacity: 1;
-    visibility: visible;
+/* Caixa do modal */
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  width: 90%;          /* ocupa quase toda a largura da tela */
+  max-width: 700px;    /* limite máximo para telas grandes */
+  max-height: 90vh;    /* altura máxima */
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  animation: fadeIn 0.3s ease;
 }
 
-.modal-container {
-    background: var(--card-bg-light);
-    border-radius: var(--border-radius);
-    width: 90%;
-    max-width: 800px;
-    max-height: 90vh;
-    overflow: hidden;
-    transform: scale(0.9) translateY(-20px);
-    opacity: 0;
-    transition: all var(--transition-bouncy);
-    box-shadow: var(--shadow-xl);
-    border: 1px solid rgba(0,0,0,0.1);
+/* Botão de fechar */
+.close-btn {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  font-size: 26px;
+  font-weight: bold;
+  color: #555;
+  cursor: pointer;
 }
 
-.modal-overlay.active .modal-container {
-    transform: scale(1) translateY(0);
-    opacity: 1;
+.close-btn:hover {
+  color: #000;
 }
 
-.modal-header {
-    padding: 25px 30px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--card-bg-light);
+/* Remove sidebar lateral do formulário carregado */
+.modal-content aside,
+.modal-content .side-nav {
+  display: none !important;
 }
 
-.modal-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-dark);
-    margin: 0;
+/* Remove as colunas internas do CakePHP para não encolher o form */
+.modal-content .row,
+.modal-content .column,
+.modal-content .column-80,
+.modal-content .column-20 {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important;
 }
 
-.modal-close {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 4px;
-    transition: all var(--transition-smooth);
-    color: var(--text-muted);
+/* Formulário centralizado e ocupando quase todo o modal */
+.modal-content form {
+  width: 100% !important;       /* ocupa toda largura da modal */
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.modal-close:hover {
-    background: rgba(0,0,0,0.1);
-    color: var(--text-dark);
-    transform: rotate(90deg);
+/* Inputs, selects e textarea ocupando 100% */
+.modal-content form input,
+.modal-content form select,
+.modal-content form textarea {
+  width: 100% !important;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  box-sizing: border-box;
 }
 
-.modal-body {
-    padding: 30px;
-    max-height: 60vh;
-    overflow-y: auto;
+/* Botão do formulário centralizado */
+.modal-content form button {
+  width: auto;
+  align-self: center;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-.modal-footer {
-    padding: 20px 30px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    background: var(--card-bg-light);
+.modal-content form button:hover {
+  background-color: #0056b3;
 }
 
-/* Conteúdo específico do checklist */
-.checklist-details {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 25px;
+/* Animação de entrada do modal */
+@keyframes fadeIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
-.detail-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+/* Mensagem de carregamento */
+.modal-content .loading {
+  text-align: center;
+  font-size: 16px;
+  color: #555;
 }
 
-.detail-label {
-    font-weight: 600;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.detail-value {
-    font-size: 1.1rem;
-    color: var(--text-dark);
-    font-weight: 500;
-}
-
-/* Itens do checklist */
-.checklist-items {
-    margin-top: 30px;
-}
-
-.items-header {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: var(--text-dark);
-}
-
-.item-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.item-row {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 15px;
-    align-items: center;
-    padding: 15px;
-    background: rgba(0,0,0,0.02);
-    border-radius: 8px;
-    border-left: 4px solid var(--primary);
-}
-
-.item-name {
-    font-weight: 500;
-}
-
-.item-status {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.status-concluido { background: #d4edda; color: #155724; }
-.status-pendente { background: #fff3cd; color: #856404; }
-.status-nao-aplicavel { background: #e2e3e5; color: #383d41; }
-
-/* Modo escuro */
-body.dark-mode .modal-container {
-    background: var(--card-bg-dark);
-    border-color: rgba(255,255,255,0.1);
-}
-
-body.dark-mode .modal-header,
-body.dark-mode .modal-footer {
-    background: var(--card-bg-dark);
-    border-color: rgba(255,255,255,0.1);
-}
-
-body.dark-mode .detail-value {
-    color: var(--text-light);
-}
-
-body.dark-mode .item-row {
-    background: rgba(255,255,255,0.05);
-}
-
-/* Responsivo */
-@media (max-width: 768px) {
-    .modal-container {
-        width: 95%;
-        margin: 20px;
-    }
-    
-    .modal-header,
-    .modal-body,
-    .modal-footer {
-        padding: 20px;
-    }
-    
-    .checklist-details {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-}
