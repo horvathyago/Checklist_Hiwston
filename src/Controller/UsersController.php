@@ -47,8 +47,13 @@ class UsersController extends AppController
 
 public function logout()
 {
-    $this->Authentication->logout();
-    return $this->redirect(['action' => 'login']);
+    $result = $this->Authentication->getResult();
+    if ($result && $result->isValid()) {
+        $this->Authentication->logout();
+        $this->request->getSession()->destroy();
+        $this->Flash->success('Você foi desconectado com sucesso.');
+    }
+    return $this->redirect(['controller' => 'Users', 'action' => 'login']);
 }
 
 
