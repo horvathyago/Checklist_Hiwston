@@ -74,18 +74,17 @@ class ChecklistsController extends AppController
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function view($id = null)
-{
-    $checklist = $this->Checklists->get($id, [
-        'contain' => ['ChecklistEquipamentos', 'Maquinas']
-    ]);
+    {
+        $checklist = $this->Checklists->get($id, [
+            'contain' => ['ChecklistEquipamentos', 'Maquinas']
+        ]);
 
-    if ($this->request->is('ajax')) {
-        $this->viewBuilder()->disableAutoLayout();
+        if ($this->request->is('ajax')) {
+            $this->viewBuilder()->disableAutoLayout();
+        }
+
+        $this->set(compact('checklist'));
     }
-
-    $this->set(compact('checklist'));
-}
-
 
     /**
      * Add method
@@ -96,17 +95,36 @@ class ChecklistsController extends AppController
     {
         $checklist = $this->Checklists->newEmptyEntity();
         if ($this->request->is('post')) {
+            // Processar equipamentos selecionados
+            $data = $this->request->getData();
+            
+            // Filtrar apenas os equipamentos que foram marcados (checked = 1)
+            if (isset($data['checklist_equipamentos'])) {
+                $equipamentosSelecionados = [];
+                foreach ($data['checklist_equipamentos'] as $index => $equipamento) {
+                    if (isset($equipamento['checked']) && $equipamento['checked'] == '1') {
+                        // Adicionar apenas se estiver marcado
+                        $equipamentosSelecionados[] = [
+                            'equipamento_id' => $equipamento['equipamento_id'],
+                            'quantidade' => $equipamento['quantidade'] ?? 1
+                        ];
+                    }
+                }
+                $data['checklist_equipamentos'] = $equipamentosSelecionados;
+            }
+            
             $checklist = $this->Checklists->patchEntity(
                 $checklist,
-                $this->request->getData(),
+                $data,
                 ['associated' => ['ChecklistEquipamentos']]
             );
+            
             if ($this->Checklists->save($checklist)) {
-                $this->Flash->success(__('The checklist has been saved.'));
+                $this->Flash->success(__('Checklist salvo com sucesso.'));
 
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The checklist could not be saved. Please, try again.'));
+            $this->Flash->error(__('Não foi possível salvar o checklist. Por favor, tente novamente.'));
         }
         $maquinas = $this->Checklists->Maquinas->find('list', limit: 200)->all();
         $this->set(compact('checklist', 'maquinas'));
@@ -164,22 +182,46 @@ class ChecklistsController extends AppController
     }
 
     /**
-     * Get equipamentos method
+     * Get equipamentos method - CORRIGIDO
      *
      * @return \Cake\Http\Response|null
      */
     public function getEquipamentos()
     {
         $this->request->allowMethod(['post']);
+        $this->autoRender = false;
+        
         $maquinaId = $this->request->getData('maquina_id');
-        $maquina = $this->Checklists->Maquinas->get($maquinaId, [
-            'contain' => ['Equipamentos'],
-        ]);
+        
+        if (!$maquinaId) {
+            return $this->response->withType('application/json')
+                ->withStringBody(json_encode([]));
+        }
+        
+        try {
+            // Verificar se a máquina existe
+            $maquinaExists = $this->Checklists->Maquinas->exists(['id' => $maquinaId]);
+            
+            if (!$maquinaExists) {
+                return $this->response->withType('application/json')
+                    ->withStringBody(json_encode([]));
+            }
+            
+            $equipamentos = $this->Checklists->Maquinas->Equipamentos->find()
+                ->where(['maquina_id' => $maquinaId])
+                ->select(['id', 'nome', 'descricao', 'quantidade_padrao'])
+                ->toArray();
 
-        $equipamentos = $maquina->equipamentos;
-
-        return $this->response->withType('application/json')
-            ->withStringBody(json_encode($equipamentos));
+            return $this->response->withType('application/json')
+                ->withStringBody(json_encode($equipamentos));
+                
+        } catch (\Exception $e) {
+            // Log do erro
+            Log::error('Erro ao carregar equipamentos: ' . $e->getMessage());
+            
+            return $this->response->withType('application/json')
+                ->withStringBody(json_encode([]));
+        }
     }
 
     /**

@@ -52,11 +52,12 @@ if ($this->request->getAttribute('identity')) {
                 <span class="sidebar-icon">➕</span><span class="sidebar-text">Novo Checklist</span>
             </a>
             <div class="sidebar-logout">
-                <?= $this->Form->postLink(
-                    '<span class="sidebar-icon">🚪</span><span class="sidebar-text">Sair</span>',
-                    ['controller' => 'Users', 'action' => 'logout'],
-                    ['escape' => false, 'class' => 'sidebar-link logout-link', 'confirm' => 'Tem certeza que deseja sair?']
+               <?= $this->Form->postLink(
+                '<span class="sidebar-icon">🚪</span><span class="sidebar-text">Sair</span>',
+                ['controller' => 'Users', 'action' => 'logout'],
+                ['escape' => false, 'class' => 'sidebar-link logout-link', 'confirm' => 'Tem certeza que deseja sair?']
                 ) ?>
+
             </div>
         </div>
     </nav>

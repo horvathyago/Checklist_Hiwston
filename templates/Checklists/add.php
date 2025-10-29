@@ -33,7 +33,6 @@ if ($this->request->getAttribute('identity')) {
         <div class="sidebar-header">
             <img src="<?= $this->Url->image('logo-hiwston.png') ?>" alt="Logo" class="sidebar-logo">
         </div>
-
         <div class="sidebar-nav">
             <a href="<?= $this->Url->build(['controller' => 'Checklists', 'action' => 'index']) ?>" class="sidebar-link <?= $this->request->getParam('action') === 'index' ? 'active' : '' ?>">
                 <span class="sidebar-icon">🏠</span><span class="sidebar-text">Dashboard</span>
@@ -97,18 +96,26 @@ if ($this->request->getAttribute('identity')) {
                 <h2 class="section-title">Adicionar Checklist</h2>
                 <?= $this->Form->create($checklist) ?>
                 <fieldset>
-                    <?php
-                        echo $this->Form->control('numero_ordem_producao');
-                        echo $this->Form->control('cliente');
-                        echo $this->Form->control('data_carregamento', ['empty' => true]);
-                        echo $this->Form->control('destino');
-                        echo $this->Form->control('voltagem');
-                        echo $this->Form->control('numero_serie');
-                        echo $this->Form->control('maquina_id', ['options' => $maquinas, 'empty' => 'Selecione uma máquina']);
-                    ?>
+                    <?= $this->Form->control('numero_ordem_producao', ['label' => 'Número da Ordem de Produção', 'required' => true]) ?>
+                    <?= $this->Form->control('cliente', ['label' => 'Cliente', 'required' => true]) ?>
+                    <?= $this->Form->control('data_carregamento', ['label' => 'Data de Carregamento', 'empty' => true, 'type' => 'date']) ?>
+                    <?= $this->Form->control('destino', ['label' => 'Destino']) ?>
+                    <?= $this->Form->control('voltagem', ['label' => 'Voltagem']) ?>
+                    <?= $this->Form->control('numero_serie', ['label' => 'Número de Série']) ?>
+                    <?= $this->Form->control('maquina_id', [
+                        'options' => $maquinas,
+                        'empty' => 'Selecione uma máquina',
+                        'label' => 'Máquina',
+                        'id' => 'maquina-select',
+                        'required' => true
+                    ]) ?>
                     <hr>
-                    <h3>Equipamentos</h3>
-                    <div id="equipamentos-container"></div>
+                    <h3>Equipamentos da Máquina</h3>
+                    <div class="equipamentos-section">
+                        <div id="equipamentos-container" class="equipamentos-list">
+                            <p class="no-equipamentos">Selecione uma máquina para ver os equipamentos</p>
+                        </div>
+                    </div>
                 </fieldset>
                 <?= $this->Form->button(__('Salvar Checklist'), ['class' => 'btn btn-primary']) ?>
                 <?= $this->Form->end() ?>
@@ -117,39 +124,55 @@ if ($this->request->getAttribute('identity')) {
     </main>
 </div>
 
-<!-- JS -->
+<!-- CSS adicional (igual ao seu, mantive dark mode) -->
+<style>
+.equipamentos-section { margin:20px 0; padding:15px; border:1px solid #e0e0e0; border-radius:8px; background:#f9f9f9; }
+.equipamentos-list { min-height:50px; }
+.equipamento-item { display:flex; align-items:center; padding:12px 15px; margin:8px 0; background:white; border:1px solid #ddd; border-radius:6px; transition:all 0.3s ease; }
+.equipamento-item:hover { border-color:#007bff; box-shadow:0 2px 5px rgba(0,123,255,0.1); }
+.equipamento-checkbox { margin-right:15px; transform:scale(1.2); cursor:pointer; }
+.equipamento-info { flex:1; }
+.equipamento-nome { font-weight:600; color:#333; margin-bottom:4px; display:block; cursor:pointer; }
+.equipamento-descricao { color:#666; font-size:0.9em; margin-bottom:5px; }
+.equipamento-quantidade { display:flex; align-items:center; gap:8px; margin-top:5px; }
+.quantidade-label { font-size:0.85em; color:#666; }
+.quantidade-input { width:80px; padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:0.9em; }
+.no-equipamentos, .loading-equipamentos, .error-text { text-align:center; padding:20px; color:#999; font-style:italic; }
+.loading-equipamentos { color:#007bff; }
+.error-text { color:#dc3545; padding:10px; }
+.fade-in { animation:fadeIn 0.5s ease-in; }
+@keyframes fadeIn { from {opacity:0; transform:translateY(-10px);} to {opacity:1; transform:translateY(0);} }
+
+/* Dark mode */
+.dark-mode .equipamentos-section { background:#2d3748; border-color:#4a5568; }
+.dark-mode .equipamento-item { background:#4a5568; border-color:#718096; }
+.dark-mode .equipamento-nome { color:#e2e8f0; }
+.dark-mode .equipamento-descricao { color:#a0aec0; }
+.dark-mode .quantidade-input { background:#2d3748; border-color:#4a5568; color:#e2e8f0; }
+</style>
+
+<!-- JS revisado -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.getElementById('sidebar');
     const mainContent = document.getElementById('mainContent');
     const menuToggle = document.getElementById('menuToggle');
     const themeToggle = document.getElementById('themeToggle');
+    const maquinaSelect = document.getElementById('maquina-select');
+    const equipamentosContainer = document.getElementById('equipamentos-container');
 
-    // ===== MENU LATERAL COM ANIMAÇÃO SUAVE =====
+    // ===== Menu Lateral =====
     function toggleSidebar() {
         sidebar.classList.toggle('expanded');
         mainContent.classList.toggle('expanded');
         document.body.classList.toggle('sidebar-open');
-
-        const isExpanded = sidebar.classList.contains('expanded');
-        localStorage.setItem('sidebarExpanded', isExpanded);
+        localStorage.setItem('sidebarExpanded', sidebar.classList.contains('expanded'));
     }
-
-    // Estado salvo no localStorage
-    if (localStorage.getItem('sidebarExpanded') === 'true') {
-        sidebar.classList.add('expanded');
-        mainContent.classList.add('expanded');
-        document.body.classList.add('sidebar-open');
-    }
-
+    if (localStorage.getItem('sidebarExpanded') === 'true') toggleSidebar();
     menuToggle.addEventListener('click', toggleSidebar);
 
-    // ===== MODO ESCURO =====
-    if (localStorage.getItem('darkMode') === 'true') {
-        document.body.classList.add('dark-mode');
-        themeToggle.textContent = '☀️';
-    }
-
+    // ===== Dark Mode =====
+    if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
     themeToggle.addEventListener('click', () => {
         document.body.classList.toggle('dark-mode');
         const dark = document.body.classList.contains('dark-mode');
@@ -157,48 +180,56 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('darkMode', dark);
     });
 
-    // ===== CARREGAR EQUIPAMENTOS DINAMICAMENTE =====
-    const maquinaSelect = document.getElementById('maquina-id');
-    const equipamentosContainer = document.getElementById('equipamentos-container');
+    // ===== Carregar Equipamentos =====
+    function carregarEquipamentos(maquinaId) {
+        if (!maquinaId) {
+            equipamentosContainer.innerHTML = '<p class="no-equipamentos">Selecione uma máquina para ver os equipamentos</p>';
+            return;
+        }
+        equipamentosContainer.innerHTML = '<p class="loading-equipamentos">Carregando equipamentos...</p>';
+        maquinaSelect.disabled = true;
+
+        const url = '<?= $this->Url->build(['controller' => 'Checklists', 'action' => 'getEquipamentos']) ?>';
+        const formData = new FormData();
+        formData.append('maquina_id', maquinaId);
+        formData.append('_csrfToken', '<?= $this->request->getAttribute('csrfToken') ?>');
+
+        fetch(url, { method: 'POST', body: formData })
+        .then(res => res.ok ? res.json() : Promise.reject(`Erro HTTP ${res.status}`))
+        .then(data => {
+            if (!data || data.length === 0) {
+                equipamentosContainer.innerHTML = '<p class="no-equipamentos">Esta máquina não possui equipamentos cadastrados</p>';
+                return;
+            }
+            let html = '';
+            data.forEach((equipamento, index) => {
+                const quantidadePadrao = (equipamento.quantidade_padrao != null) ? equipamento.quantidade_padrao : 1;
+                html += `
+                <div class="equipamento-item fade-in">
+                    <input type="checkbox" id="equipamento-${index}" name="checklist_equipamentos[${index}][checked]" value="1" checked class="equipamento-checkbox">
+                    <input type="hidden" name="checklist_equipamentos[${index}][equipamento_id]" value="${equipamento.id}">
+                    <div class="equipamento-info">
+                        <label for="equipamento-${index}" class="equipamento-nome">${equipamento.nome}</label>
+                        ${equipamento.descricao ? `<div class="equipamento-descricao">${equipamento.descricao}</div>` : ''}
+                        <div class="equipamento-quantidade">
+                            <span class="quantidade-label">Quantidade:</span>
+                            <input type="number" name="checklist_equipamentos[${index}][quantidade]" value="${quantidadePadrao}" min="0" class="quantidade-input">
+                        </div>
+                    </div>
+                </div>`;
+            });
+            equipamentosContainer.innerHTML = html;
+        })
+        .catch(err => {
+            console.error('Erro ao carregar equipamentos:', err);
+            equipamentosContainer.innerHTML = '<p class="error-text">Erro ao carregar equipamentos. Verifique o console.</p>';
+        })
+        .finally(() => maquinaSelect.disabled = false);
+    }
 
     if (maquinaSelect) {
-        maquinaSelect.addEventListener('change', function() {
-            const maquinaId = this.value;
-            equipamentosContainer.innerHTML = '';
-            if (!maquinaId) return;
-
-            fetch('<?= $this->Url->build(['controller' => 'Checklists', 'action' => 'getEquipamentos']) ?>', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRF-Token': '<?= $this->request->getAttribute('csrfToken') ?>'
-                },
-                body: 'maquina_id=' + maquinaId
-            })
-            .then(response => response.json())
-            .then(data => {
-                let index = 0;
-                data.forEach(equipamento => {
-                    const div = document.createElement('div');
-                    div.className = 'equipamento-item fade-in';
-
-                    div.innerHTML = `
-                        <input type="hidden" name="checklist_equipamentos[${index}][equipamento_id]" value="${equipamento.id}">
-                        <div class="equipamento-line">
-                            <input type="checkbox" id="eq-${index}" name="checklist_equipamentos[${index}][checked]" value="1" checked>
-                            <label for="eq-${index}" class="equipamento-nome">${equipamento.nome}</label>
-                            <label class="equipamento-qtde-label">Quantidade:</label>
-                            <input type="number" name="checklist_equipamentos[${index}][quantidade]" value="${equipamento.quantidade_padrao || 1}" min="0" class="equipamento-qtde">
-                        </div>`;
-                    equipamentosContainer.appendChild(div);
-                    index++;
-                });
-            })
-            .catch(err => {
-                console.error('Erro ao carregar equipamentos:', err);
-                equipamentosContainer.innerHTML = '<p class="error-text">Erro ao carregar equipamentos.</p>';
-            });
-        });
+        maquinaSelect.addEventListener('change', () => carregarEquipamentos(maquinaSelect.value));
+        if (maquinaSelect.value) carregarEquipamentos(maquinaSelect.value);
     }
 });
 </script>

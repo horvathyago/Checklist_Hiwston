@@ -22,8 +22,7 @@ $this->Html->css([
             <?= $this->Form->control('email', ['label' => 'E-mail', 'required' => true]) ?>
             <?= $this->Form->control('password', ['label' => 'Senha', 'required' => true]) ?>
             <?= $this->Form->button(__('Entrar')) ?>
-            <?= $this->Form->create(null, ['autocomplete' => 'off']) ?>
-
+            
         <?= $this->Form->end() ?>
         
         <?php if ($this->request->getParam('action') === 'login' && !$this->request->getData()): ?>
